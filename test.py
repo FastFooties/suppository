@@ -15,7 +15,6 @@ Q = np.empty(I)
 R = np.empty(I)
 N = len(S)
 S = [math.trunc(s) for s in S]
-D = 0
 
 # Half the sum of the claims (determine y)
 def halfTheSumOfTheClaims (Q):
@@ -78,7 +77,7 @@ for n in range(0, N):
             R[i] = math.floor(value)
 
     # Calculate departures
-    D += sum(R)
+    D = sum(R)
 
     # Dump
     print('Sn', S[n])
