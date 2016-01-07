@@ -8,10 +8,11 @@ import matplotlib.pylab as plt
 np.random.seed(3)
 
 I = 3
-S = np.random.normal(20, 5, I)
+AI = [[8, 1], [10, 2], [50, 3]]
+S = np.random.normal(50, 5, I)
 
-Q = [0, 0, 0]
-R = [0, 0, 0]
+Q = np.empty(I)
+R = np.empty(I)
 N = len(S)
 S = [math.trunc(s) for s in S]
 D = 0
@@ -25,9 +26,13 @@ def exceedsServerCapacity (Q, n):
     return S[n] > halfTheSumOfTheClaims(Q)
 
 for n in range(0, N):
-    # Determine claims
-    A = [int(q) for q in np.random.normal(8, 1, I)]
+    # Determine arrivals
+    A = np.empty(I)
+    for i in range(0, I):
+        A[i] = np.random.normal(AI[i][0], AI[i][1])
+    A = [math.trunc(a) for a in A]
 
+    # Determine claims
     for i in range(0, I):
         Q[i] = max(Q[i] + A[i] - R[i], 0)
 
@@ -75,6 +80,7 @@ for n in range(0, N):
     # Calculate departures
     D += sum(R)
 
+    # Dump
     print('Sn', S[n])
     print('A', A)
     print('Q', Q)
