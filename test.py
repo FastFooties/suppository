@@ -7,13 +7,15 @@ import matplotlib.pylab as plt
 
 np.random.seed(3)
 
+# Configuration
 I = 3
 AI = [[8, 1], [10, 2], [50, 3]]
-S = np.random.normal(50, 5, I)
+N = 3
+S = np.random.normal(50, 5, N)
 
+# Other variables
 Q = np.empty(I)
 R = np.empty(I)
-N = len(S)
 S = [math.trunc(s) for s in S]
 WIP = 0
 TH = 0
