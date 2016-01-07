@@ -7,55 +7,47 @@ import matplotlib.pylab as plt
 
 np.random.seed(3)
 
-Q = [100.0, 200.0, 300.0]
-Qs = sum(Q)
-I = len(Q)
 S = [100.0, 150.0, 200.0, 300.0, 400.0, 500.0, 600.0]
 N = len(S)
-M = 1000000000
 
-# Determine y
+# Half the sum of the claims (determine y)
 def halfTheSumOfTheClaims (Q):
-    return Qs / 2
+    return sum(Q) / 2
 
-y = halfTheSumOfTheClaims(Q)
-
-# Applicational rule
-def exceedsServerCapacity (n):
-    return S[n] > y
-
-# First step
-R = []
+# Applicational rule (determine x)
+def exceedsServerCapacity (Q, n):
+    return S[n] > halfTheSumOfTheClaims(Q)
 
 for n in range(0, N):
-    Rn = []
+    # Determine claims
+    Q = [100.0, 200.0, 300.0]
+    I = len(Q)
+
+    # Equal split
+    R = []
     for i in range(0, I):
-        Rn.append(S[n] / I)
-    R.append(Rn)
+        R.append(S[n] / I)
 
-print(R)
-
-for n in range(0, N):
     # First rule
-    if not exceedsServerCapacity(n):
+    if not exceedsServerCapacity(Q, n):
         r = 0                          # Remainder
         for i in range(0, I):
             ri = r / (I - i)           # Queue remainder
             r -= ri                    # Use queue remainder
 
-            value = R[n][i] + ri
+            value = R[i] + ri
             limit = Q[i] / 2           # Upper bound
             delta = value - limit
 
             if delta > 0:
                 r += delta
-                R[n][i] = limit
+                R[i] = limit
             else:
-                R[n][i] = value
+                R[i] = value
 
     # Second rule
     else:
-        loss = (Qs - S[n]) / I         # Distributed loss
+        loss = (sum(Q) - S[n]) / I     # Distributed loss
         r = 0                          # Remainder
         for i in range(0, I):
             ri = r / (I - i)           # Queue remainder
@@ -67,11 +59,12 @@ for n in range(0, N):
 
             if delta > 0:
                 r += delta
-                R[n][i] = limit
+                R[i] = limit
             else:
-                R[n][i] = Q[i] - value
+                R[i] = Q[i] - value
 
-print(R)
+    print(R)
+
 
 
 
