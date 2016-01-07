@@ -15,6 +15,9 @@ Q = np.empty(I)
 R = np.empty(I)
 N = len(S)
 S = [math.trunc(s) for s in S]
+WIP = 0
+TH = 0
+CT = 0
 
 # Half the sum of the claims (determine y)
 def halfTheSumOfTheClaims (Q):
@@ -79,6 +82,12 @@ for n in range(0, N):
     # Calculate departures
     D = sum(R)
 
+    # Determine total jobs in queue
+    WIP += sum(Q)
+
+    # Determine throughput
+    TH += D
+
     # Dump
     print('Sn', S[n])
     print('A', A)
@@ -88,7 +97,14 @@ for n in range(0, N):
     print('D', D)
     print('---')
 
+# Totals
+WIP = WIP / N
+TH = TH / N
+CT = WIP / TH
 
+print('WIP', WIP)
+print('TH', TH)
+print('CT', CT)
 
 
 
