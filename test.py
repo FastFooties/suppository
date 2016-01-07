@@ -9,17 +9,18 @@ np.random.seed(3)
 
 # Configuration
 I = 3
-AI = [[8, 1], [10, 2], [50, 3]]
-N = 3
+AI = [[8, 1], [10, 2], [30, 3]]
+N = 5000
 S = np.random.normal(50, 5, N)
 
 # Other variables
 Q = np.empty(I)
 R = np.empty(I)
 S = [math.trunc(s) for s in S]
-WIP = 0
-TH = 0
-CT = 0
+RR_WIP = 0
+RR_TH = 0
+CGC_WIP = 0
+CGC_TH = 0
 
 # Half the sum of the claims (determine y)
 def halfTheSumOfTheClaims (Q):
@@ -43,6 +44,10 @@ for n in range(0, N):
     # Equal split
     for i in range(0, I):
         R[i] = S[n] / I
+
+    # Determine totals for RR
+    RR_WIP += sum(Q)
+    RR_TH += sum(R)
 
     # First rule
     if not exceedsServerCapacity(Q, n):
@@ -84,13 +89,12 @@ for n in range(0, N):
     # Calculate departures
     D = sum(R)
 
-    # Determine total jobs in queue
-    WIP += sum(Q)
-
-    # Determine throughput
-    TH += D
+    # Determine totals for CGC
+    CGC_WIP += sum(Q)
+    CGC_TH += D
 
     # Dump
+    """
     print('Sn', S[n])
     print('A', A)
     print('Q', Q)
@@ -98,12 +102,26 @@ for n in range(0, N):
     print('R', R)
     print('D', D)
     print('---')
+    """
 
-# Totals
-WIP = WIP / N
-TH = TH / N
-CT = WIP / TH
+# Totals RR
+RR_WIP = RR_WIP / N
+RR_TH = RR_TH / N
+RR_CT = RR_WIP / RR_TH
 
-print('WIP', WIP)
-print('TH', TH)
-print('CT', CT)
+print('RR ---')
+print('WIP', RR_WIP)
+print('TH', RR_TH)
+print('CT', RR_CT)
+print('------')
+
+# Totals RR
+CGC_WIP = CGC_WIP / N
+CGC_TH = CGC_TH / N
+CGC_CT = CGC_WIP / CGC_TH
+
+print('CGC ---')
+print('WIP', CGC_WIP)
+print('TH', CGC_TH)
+print('CT', CGC_CT)
+print('------')
