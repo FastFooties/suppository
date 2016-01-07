@@ -8,12 +8,12 @@ import matplotlib.pylab as plt
 np.random.seed(3)
 
 I = 3
-S = [20, 10, 30]
+S = np.random.normal(20, 5, I)
 
 Q = [0, 0, 0]
 R = [0, 0, 0]
 N = len(S)
-S = [float(s) for s in S]
+S = [math.trunc(s) for s in S]
 D = 0
 
 # Half the sum of the claims (determine y)
