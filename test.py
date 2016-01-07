@@ -13,6 +13,7 @@ Q = [0, 0, 0]
 R = [0, 0, 0]
 N = len(S)
 S = [float(s) for s in S]
+D = 0
 
 # Half the sum of the claims (determine y)
 def halfTheSumOfTheClaims (Q):
@@ -68,11 +69,15 @@ for n in range(0, N):
             else:
                 R[i] = Q[i] - value
 
+    # Calculate departures
+    D += sum(R)
+
     print('Sn', S[n])
     print('A', A)
     print('Q', Q)
     print('Rule', 2 if exceedsServerCapacity(Q, n) else 1)
     print('R', R)
+    print('D', D)
     print('---')
 
 
