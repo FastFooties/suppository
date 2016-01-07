@@ -2,6 +2,7 @@ import sys
 sys.path.append('/usr/lib/python2.7/dist-packages')
 
 import numpy as np
+import math
 import matplotlib.pylab as plt
 
 np.random.seed(3)
@@ -47,9 +48,9 @@ for n in range(0, N):
 
             if delta > 0:
                 r += delta
-                R[i] = limit
-            else:
-                R[i] = value
+                value = limit
+
+            R[i] = math.floor(value)
 
     # Second rule
     else:
@@ -65,9 +66,11 @@ for n in range(0, N):
 
             if delta > 0:
                 r += delta
-                R[i] = limit
+                value = limit
             else:
-                R[i] = Q[i] - value
+                value = Q[i] - value
+
+            R[i] = math.floor(value)
 
     # Calculate departures
     D += sum(R)
