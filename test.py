@@ -1,6 +1,3 @@
-import sys
-sys.path.append('/usr/lib/python2.7/dist-packages')
-
 import numpy as np
 import math
 import matplotlib.pylab as plt
