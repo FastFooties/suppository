@@ -2,13 +2,17 @@ import sys
 sys.path.append('/usr/lib/python2.7/dist-packages')
 
 import numpy as np
-import numpy.random as random
 import matplotlib.pylab as plt
 
 np.random.seed(3)
 
-S = [100.0, 150.0, 200.0, 300.0, 400.0, 500.0, 600.0]
+I = 3
+S = [20, 10, 30]
+
+Q = [0, 0, 0]
+R = [0, 0, 0]
 N = len(S)
+S = [float(s) for s in S]
 
 # Half the sum of the claims (determine y)
 def halfTheSumOfTheClaims (Q):
@@ -20,13 +24,14 @@ def exceedsServerCapacity (Q, n):
 
 for n in range(0, N):
     # Determine claims
-    Q = [100.0, 200.0, 300.0]
-    I = len(Q)
+    A = [int(q) for q in np.random.normal(8, 1, I)]
+
+    for i in range(0, I):
+        Q[i] = max(Q[i] + A[i] - R[i], 0)
 
     # Equal split
-    R = []
     for i in range(0, I):
-        R.append(S[n] / I)
+        R[i] = S[n] / I
 
     # First rule
     if not exceedsServerCapacity(Q, n):
@@ -63,7 +68,12 @@ for n in range(0, N):
             else:
                 R[i] = Q[i] - value
 
-    print(R)
+    print('Sn', S[n])
+    print('A', A)
+    print('Q', Q)
+    print('Rule', 2 if exceedsServerCapacity(Q, n) else 1)
+    print('R', R)
+    print('---')
 
 
 
