@@ -7,15 +7,19 @@ np.random.seed(3)
 # Configuration
 I = 3
 AI = [[8, 1], [10, 2], [30, 3]]
-N = 5000
+N = 50
 S = np.random.normal(50, 5, N)
 
 # Other variables
-Q = np.empty(I)
-R = np.empty(I)
 S = [math.trunc(s) for s in S]
+
+Qr = np.empty(I)
+Rr = np.empty(I)
 RR_WIP = 0
 RR_TH = 0
+
+Qc = np.empty(I)
+Rc = np.empty(I)
 CGC_WIP = 0
 CGC_TH = 0
 
@@ -27,24 +31,26 @@ def halfTheSumOfTheClaims (Q):
 def exceedsServerCapacity (Q, n):
     return S[n] > halfTheSumOfTheClaims(Q)
 
-for n in range(0, N):
-    # Determine arrivals
-    A = np.empty(I)
-    for i in range(0, I):
-        A[i] = np.random.normal(AI[i][0], AI[i][1])
-    A = [math.trunc(a) for a in A]
-
-    # Determine claims
+# Determine number of jobs in queue
+def determineNumberOfJobsInQ (A, Q, R):
     for i in range(0, I):
         Q[i] = max(Q[i] + A[i] - R[i], 0)
+    return Q
 
-    # Equal split
-    for i in range(0, I):
-        R[i] = S[n] / I
+# Distribution algorithms
+def RR (A, Q, R, n):
+    Q = determineNumberOfJobsInQ(A, Q, R)
 
-    # Determine totals for RR
-    RR_WIP += sum(Q)
-    RR_TH += sum(R)
+    # Start with equal split
+    R = [S[n] / I for r in R]
+
+    return (Q, R, sum(R))
+
+def CGC (A, Q, R, n):
+    Q = determineNumberOfJobsInQ(A, Q, R)
+
+    # Start with equal split
+    R = [S[n] / I for r in R]
 
     # First rule
     if not exceedsServerCapacity(Q, n):
@@ -83,23 +89,41 @@ for n in range(0, N):
 
             R[i] = math.floor(value)
 
-    # Calculate departures
-    D = sum(R)
+    return (Q, R, sum(R))
 
-    # Determine totals for CGC
-    CGC_WIP += sum(Q)
-    CGC_TH += D
+# Test
+for n in range(0, N):
+    # Determine arrivals
+    A = np.empty(I)
+    for i in range(0, I):
+        A[i] = np.random.normal(AI[i][0], AI[i][1])
+    A = [math.trunc(a) for a in A]
+
+    # RR
+    Qr, Rr, Dr = RR(A, Qr, Rr, n)
+
+    RR_WIP += sum(Qr)
+    RR_TH  += sum(Rr)
+
+    # CGC
+    Qc, Rc, Dc =  CGC(A, Qc, Rc, n)
+
+    CGC_WIP += sum(Qc)
+    CGC_TH  += sum(Rc)
 
     # Dump
-    """
+    #"""
     print('Sn', S[n])
     print('A', A)
-    print('Q', Q)
-    print('Rule', 2 if exceedsServerCapacity(Q, n) else 1)
-    print('R', R)
-    print('D', D)
+    print('Qr', Qr)
+    print('Rr', Rr)
+    print('Dr', Dr)
+    print('Qc', Qc)
+    print('Rc', Rc)
+    print('Dc', Dc)
+    print('Rule', 2 if exceedsServerCapacity(Qc, n) else 1)
     print('---')
-    """
+    #"""
 
 # Totals RR
 RR_WIP = RR_WIP / N
