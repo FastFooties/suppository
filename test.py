@@ -44,6 +44,22 @@ def RR (A, Q, R, n):
     # Start with equal split
     R = [S[n] / I for r in R]
 
+    # Divide over capacity into other queues
+    r = 0
+    for i in range(0, I):
+        ri = r / (I - i)               # Queue remainder
+        r -= ri                        # Use queue remainder
+
+        value = R[i] + ri
+        limit = Q[i]                   # Upper bound
+        delta = value - limit
+
+        if delta > 0:
+            r += delta
+            value = limit
+
+        R[i] = math.floor(value)
+
     return (Q, R, sum(R))
 
 def CGC (A, Q, R, n):
