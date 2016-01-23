@@ -1,5 +1,4 @@
 import numpy as np
-import math
 import matplotlib.pylab as plt
 
 np.random.seed(3)
@@ -8,13 +7,11 @@ np.random.seed(3)
 I = 3
 AI = [[8, 1], [10, 2], [30, 3]]
 N = 50
-#S = np.random.normal(50, 5, N)
 S = np.empty(N)
 S.fill(29)
+#S = np.random.normal(50, 5, N)
 
 # Other variables
-S = [math.trunc(s) for s in S]
-
 Qr = np.empty(I)
 Rr = np.empty(I)
 RR_WIP = 0
@@ -60,7 +57,7 @@ def RR (A, Q, R, n):
             r += delta
             value = limit
 
-        R[i] = math.floor(value)
+        R[i] = value
 
     return (Q, R, sum(R))
 
@@ -85,7 +82,7 @@ def CGC (A, Q, R, n):
                 r += delta
                 value = limit
 
-            R[i] = math.floor(value)
+            R[i] = value
 
     # Second rule
     else:
@@ -105,7 +102,7 @@ def CGC (A, Q, R, n):
             else:
                 value = Q[i] - value
 
-            R[i] = math.floor(value)
+            R[i] = value
 
     return (Q, R, sum(R))
 
@@ -115,7 +112,6 @@ for n in range(0, N):
     A = np.empty(I)
     for i in range(0, I):
         A[i] = np.random.normal(AI[i][0], AI[i][1])
-    A = [math.trunc(a) for a in A]
 
     # RR
     Qr, Rr, Dr = RR(A, Qr, Rr, n)
