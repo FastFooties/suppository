@@ -8,7 +8,9 @@ np.random.seed(3)
 I = 3
 AI = [[8, 1], [10, 2], [30, 3]]
 N = 50
-S = np.random.normal(50, 5, N)
+#S = np.random.normal(50, 5, N)
+S = np.empty(N)
+S.fill(29)
 
 # Other variables
 S = [math.trunc(s) for s in S]
