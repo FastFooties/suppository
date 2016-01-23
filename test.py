@@ -65,7 +65,7 @@ def determineNumberOfJobsInQ (Q, A, R, D):
 
         # Add arrivals
         for j in range(0, int(round(A[i]))):
-            Qi.append(1)
+            Qi.append(0)
 
         # No departures
         if R[i] == 0.0:
