@@ -12,19 +12,26 @@ S.fill(48)
 #S = np.random.normal(50, 5, N)
 
 # Other variables
+Qf = [[] for q in range(0, I)]
+Rf = np.empty(I)
+Rf.fill(0)
+Df = [[] for q in range(0, I)]
+FF_WIP = 0.0
+FF_TH = 0.0
+
 Qr = [[] for q in range(0, I)]
 Rr = np.empty(I)
 Rr.fill(0)
 Dr = [[] for q in range(0, I)]
-RR_WIP = 0
-RR_TH = 0
+RR_WIP = 0.0
+RR_TH = 0.0
 
 Qc = [[] for q in range(0, I)]
 Rc = np.empty(I)
 Rc.fill(0)
 Dc = [[] for q in range(0, I)]
-CGC_WIP = 0
-CGC_TH = 0
+CGC_WIP = 0.0
+CGC_TH = 0.0
 
 # Increase time in queue
 def increaseTIQ (Q):
@@ -103,6 +110,68 @@ def varianceD (D):
     return V
 
 # Distribution algorithms
+# > First Come, First Served
+def FCFS (Q, A, R, D, n):
+    Q, D = determineNumberOfJobsInQ(Q, A, R, D)
+
+    # Determine results
+    R = [0 for r in R]
+    s = S[n]
+    offset = 0
+    indexes = [0 for r in R]
+
+    while s > 0:
+        # First rule: handle longest waiting job
+        high = 0
+        queues = []
+        for i in range(0, I):
+            i = (i + offset) % I       # RR
+            Qi = Q[i]
+            index = indexes[i]
+
+            # Queue fully handled
+            if index >= len(Qi):
+                continue
+
+            # Multiple longest waiting jobs
+            if Qi[index] == high:
+                queues.append(i)
+                indexes[i] += 1
+
+            # New longest waiting job
+            elif Qi[index] > high:
+                # Other job found, reset indexes
+                for _, j in enumerate(queues):
+                    indexes[j] -= 1
+
+                high = Qi[index]
+                queues = [i]
+                indexes[i] += 1
+
+        # Second rule: handle one of longest waiting jobs with RR
+        if len(queues) > 1:
+            q = queues[offset % len(queues)]
+
+            # Reset other indexes
+            for _, j in enumerate(queues):
+                if j != q:
+                    indexes[j] -= 1
+
+            R[q] += 1
+            s -= 1
+
+        # Only one longest waiting job
+        elif len(queues) == 1:
+            R[queues[0]] += 1
+            s -= 1
+        else:
+            break                      # No more jobs
+
+        offset += 1                    # RR
+
+    return (Q, R, D)
+
+# > Round Robin
 def RR (Q, A, R, D, n):
     Q, D = determineNumberOfJobsInQ(Q, A, R, D)
 
@@ -127,6 +196,7 @@ def RR (Q, A, R, D, n):
 
     return (Q, R, D)
 
+# > Contested Garment Consistent
 def CGC (Q, A, R, D, n):
     Q, D = determineNumberOfJobsInQ(Q, A, R, D)
 
@@ -179,6 +249,13 @@ for n in range(0, N):
     for i in range(0, I):
         A[i] = np.random.normal(AI[i][0], AI[i][1])
 
+    # FCFS
+    Qf = increaseTIQ(Qf)
+    Qf, Rf, Df = FCFS(Qf, A, Rf, Df, n)
+
+    FF_WIP += sumQ(Qf)
+    FF_TH  += sum(Rf)
+
     # RR
     Qr = increaseTIQ(Qr)
     Qr, Rr, Dr = RR(Qr, A, Rr, Dr, n)
@@ -197,6 +274,9 @@ for n in range(0, N):
     """
     print('Sn', S[n])
     print('A', A)
+    print('Qf', Qf)
+    print('Rf', Rf)
+    print('Df', Df)
     print('Qr', Qr)
     print('Rr', Rr)
     print('Dr', Dr)
@@ -207,11 +287,23 @@ for n in range(0, N):
     print('---')
     """
 
+# Totals FCFS
+FF_WIP = FF_WIP / N
+FF_TH = FF_TH / N
+FF_CT = FF_WIP / FF_TH
+
+print('FCFS ---')
+print('WIP', FF_WIP)
+print('TH', FF_TH)
+print('CT', FF_CT)
+#print('D', Df)
+print('Davg', averageD(Df))
+print('V', varianceD(Df))
+
 # Totals RR
 RR_WIP = RR_WIP / N
 RR_TH = RR_TH / N
 RR_CT = RR_WIP / RR_TH
-
 
 print('RR ---')
 print('WIP', RR_WIP)
@@ -220,9 +312,8 @@ print('CT', RR_CT)
 #print('D', Dr)
 print('Davg', averageD(Dr))
 print('V', varianceD(Dr))
-print('------')
 
-# Totals RR
+# Totals CGC
 CGC_WIP = CGC_WIP / N
 CGC_TH = CGC_TH / N
 CGC_CT = CGC_WIP / CGC_TH
@@ -234,4 +325,3 @@ print('CT', CGC_CT)
 #print('D', Dc)
 print('Davg', averageD(Dc))
 print('V', varianceD(Dc))
-print('------')
