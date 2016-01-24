@@ -5,11 +5,11 @@ np.random.seed(3)
 
 # Configuration
 I = 3
-AI = [[8, 1], [10, 2], [30, 3]]
-N = 50
-S = np.empty(N)
-S.fill(48)
-#S = np.random.normal(50, 5, N)
+AI = [2, 8, 14]
+N = 5000
+C = np.empty(N)
+C.fill(26)
+#C = np.random.poisson(50, N)
 
 # Other variables
 Qf = [[] for q in range(0, I)]
@@ -33,7 +33,7 @@ Dc = [[] for q in range(0, I)]
 CGC_WIP = 0.0
 CGC_TH = 0.0
 
-# Increase time in queue
+# Increase time in queue per period
 def increaseTIQ (Q):
     for i in range(0, I):
         for q in range(0, len(Q[i])):
@@ -50,14 +50,6 @@ def sumQ (Q):
 
     return total
 
-# Half the sum of the claims (determine y)
-def halfTheSumOfTheClaims (Q):
-    return sumQ(Q) / 2
-
-# Applicational rule (determine x)
-def exceedsServerCapacity (Q, n):
-    return S[n] > halfTheSumOfTheClaims(Q)
-
 # Determine number of jobs in queue
 def determineNumberOfJobsInQ (Q, A, R, D):
     for i in range(0, I):
@@ -71,7 +63,7 @@ def determineNumberOfJobsInQ (Q, A, R, D):
         if R[i] == 0.0:
             continue
 
-        # Depart R[i] amount of jobs from beginning of queue
+        # Pick R[i] amount of jobs from beginning of queue
         if len(Qi) > R[i]:
             r = int(round(R[i]))
             d = Qi[:r]
@@ -109,27 +101,27 @@ def varianceD (D):
 
     return V
 
-# Distribution algorithms
+# Queueing Disciplines
 # > First Come, First Served
 def FCFS (Q, A, R, D, n):
     Q, D = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Determine results
     R = [0 for r in R]
-    s = S[n]
+    c = C[n]
     offset = 0
     indexes = [0 for r in R]
 
-    while s > 0:
+    while c > 0:
         # First rule: handle longest waiting job
         high = 0
         queues = []
         for i in range(0, I):
-            i = (i + offset) % I       # RR
+            i = (i + offset) % I       # Round-Robin cycle
             Qi = Q[i]
             index = indexes[i]
 
-            # Queue fully handled
+            # Queue is fully handled
             if index >= len(Qi):
                 continue
 
@@ -148,7 +140,7 @@ def FCFS (Q, A, R, D, n):
                 queues = [i]
                 indexes[i] += 1
 
-        # Second rule: handle one of longest waiting jobs with RR
+        # Second rule: handle one of longest waiting jobs using RR
         if len(queues) > 1:
             q = queues[offset % len(queues)]
 
@@ -158,12 +150,12 @@ def FCFS (Q, A, R, D, n):
                     indexes[j] -= 1
 
             R[q] += 1
-            s -= 1
+            c -= 1
 
-        # Only one longest waiting job
+        # Handle longest waiting job only
         elif len(queues) == 1:
             R[queues[0]] += 1
-            s -= 1
+            c -= 1
         else:
             break                      # No more jobs
 
@@ -176,9 +168,9 @@ def RR (Q, A, R, D, n):
     Q, D = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Start with equal split
-    R = [S[n] / I for r in R]
+    R = [C[n] / I for r in R]
 
-    # Divide over capacity into other queues
+    # Divide overcapacity on to other queues
     r = 0
     for i in range(0, I):
         ri = r / (I - i)               # Queue remainder
@@ -197,11 +189,20 @@ def RR (Q, A, R, D, n):
     return (Q, R, D)
 
 # > Contested Garment Consistent
+
+# Half the sum of the claims (determine y)
+def halfTheSumOfTheClaims (Q):
+    return sumQ(Q) / 2
+
+# Determine rule (determine x)
+def exceedsServerCapacity (Q, n):
+    return C[n] > halfTheSumOfTheClaims(Q)
+
 def CGC (Q, A, R, D, n):
     Q, D = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Start with equal split
-    R = [S[n] / I for r in R]
+    R = [C[n] / I for r in R]
 
     # First rule
     if not exceedsServerCapacity(Q, n):
@@ -222,7 +223,7 @@ def CGC (Q, A, R, D, n):
 
     # Second rule
     else:
-        loss = (sumQ(Q) - S[n]) / I    # Distributed loss
+        loss = (sumQ(Q) - C[n]) / I    # Distributed loss
         r = 0                          # Remainder
         for i in range(0, I):
             ri = r / (I - i)           # Queue remainder
@@ -247,7 +248,7 @@ for n in range(0, N):
     # Determine arrivals
     A = np.empty(I)
     for i in range(0, I):
-        A[i] = np.random.normal(AI[i][0], AI[i][1])
+        A[i] = np.random.poisson(AI[i])
 
     # FCFS
     Qf = increaseTIQ(Qf)
@@ -272,7 +273,7 @@ for n in range(0, N):
 
     # Dump
     """
-    print('Sn', S[n])
+    print('Cn', C[n])
     print('A', A)
     print('Qf', Qf)
     print('Rf', Rf)
