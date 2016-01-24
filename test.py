@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import matplotlib.pylab as plt
 
 np.random.seed(3)
@@ -46,6 +47,11 @@ def sumQ (Q):
     for i in range(0, I):
         total += len(Q[i])
     return total
+
+# Round with rest
+def roundRest (value):
+    rounded = math.floor(value)
+    return rounded, value - rounded
 
 # Count departures
 def countD (D):
@@ -192,6 +198,9 @@ def RR (Q, A, R, D, n):
 
         R[i] = value
 
+    for i in range(0, int(r)):
+        R[i % I] += 1
+
     return (Q, R, D)
 
 # > Contested Garment Consistent
@@ -210,14 +219,17 @@ def CGC (Q, A, R, D, n):
     # Start with equal split
     R = [C[n] / I for r in R]
 
+    x = 0.0
+
     # First rule
     if not exceedsServerCapacity(Q, n):
+        rule = 1
         r = 0.0                        # Remainder
         for i in range(0, I):
             ri = r / (I - i)           # Queue remainder
             r -= ri                    # Use queue remainder
 
-            lenQi = float(len(Q[i]))
+            lenQi = len(Q[i])
             value = R[i] + ri
             limit = lenQi / 2          # Upper bound
             delta = value - limit
@@ -226,17 +238,21 @@ def CGC (Q, A, R, D, n):
                 r += delta
                 value = limit
 
+            value, rest = roundRest(value)
+            x += rest
             R[i] = value
 
     # Second rule
     else:
+        rule = 2
         loss = (sumQ(Q) - C[n]) / I    # Distributed loss
         r = 0.0                        # Remainder
         for i in range(0, I):
             ri = r / (I - i)           # Queue remainder
+            ri = r
             r -= ri                    # Use queue remainder
 
-            lenQi = float(len(Q[i]))
+            lenQi = len(Q[i])
             value = loss + ri
             limit = lenQi / 2          # Lower bound
             delta = value - limit
@@ -247,9 +263,14 @@ def CGC (Q, A, R, D, n):
             else:
                 value = lenQi - value
 
+            value, rest = roundRest(value)
+            x += rest
             R[i] = value
 
-    return (Q, R, D)
+    for i in range(0, int(round(x))):
+        R[i % I] += 1
+
+    return (Q, R, D, rule)
 
 # Test
 total = 0.0
@@ -275,7 +296,7 @@ for n in range(0, N):
 
     # CGC
     Qc = increaseTIQ(Qc)
-    Qc, Rc, Dc =  CGC(Qc, A, Rc, Dc, n)
+    Qc, Rc, Dc, rule =  CGC(Qc, A, Rc, Dc, n)
 
     CGC_WIP += sumQ(Qc)
 
@@ -292,7 +313,7 @@ for n in range(0, N):
     print('Qc', Qc)
     #print('Dc', Dc)
     print('sum Dc', countD(Dc))
-    print('Rule', 2 if exceedsServerCapacity(Qc, n) else 1)
+    print('Rule', rule)
     print('---')
     print('Rf', Rf)
     print('Rr', Rr)
