@@ -6,9 +6,9 @@ np.random.seed(3)
 # Configuration
 I = 3
 AI = [2, 8, 14]
-N = 5000
+N = 5
 C = np.empty(N)
-C.fill(26)
+C.fill(25)
 #C = np.random.poisson(50, N)
 
 # Other variables
@@ -38,17 +38,21 @@ def increaseTIQ (Q):
     for i in range(0, I):
         for q in range(0, len(Q[i])):
             Q[i][q] += 1
-
     return Q
 
 # Sum of queue
 def sumQ (Q):
     total = 0
-
     for i in range(0, I):
         total += len(Q[i])
-
     return total
+
+# Count departures
+def countD (D):
+    count = 0.0
+    for i in range(0, I):
+        count += len(D[i])
+    return count
 
 # Determine number of jobs in queue
 def determineNumberOfJobsInQ (Q, A, R, D):
@@ -56,7 +60,7 @@ def determineNumberOfJobsInQ (Q, A, R, D):
         Qi = Q[i]
 
         # Add arrivals
-        for j in range(0, int(round(A[i]))):
+        for j in range(0, int(A[i])):
             Qi.append(0)
 
         # No departures
@@ -65,7 +69,7 @@ def determineNumberOfJobsInQ (Q, A, R, D):
 
         # Pick R[i] amount of jobs from beginning of queue
         if len(Qi) > R[i]:
-            r = int(round(R[i]))
+            r = int(R[i])
             d = Qi[:r]
             Q[i] = Qi[r:]
 
@@ -107,7 +111,7 @@ def FCFS (Q, A, R, D, n):
     Q, D = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Determine results
-    R = [0 for r in R]
+    R = [0.0 for r in R]
     c = C[n]
     offset = 0
     indexes = [0 for r in R]
@@ -150,15 +154,16 @@ def FCFS (Q, A, R, D, n):
                     indexes[j] -= 1
 
             R[q] += 1
-            c -= 1
 
         # Handle longest waiting job only
         elif len(queues) == 1:
             R[queues[0]] += 1
-            c -= 1
-        else:
-            break                      # No more jobs
 
+        # No more jobs
+        else:
+            R[offset % I] += 1
+
+        c -= 1
         offset += 1                    # RR
 
     return (Q, R, D)
@@ -171,13 +176,14 @@ def RR (Q, A, R, D, n):
     R = [C[n] / I for r in R]
 
     # Divide overcapacity on to other queues
-    r = 0
+    r = 0.0
     for i in range(0, I):
         ri = r / (I - i)               # Queue remainder
         r -= ri                        # Use queue remainder
 
+        lenQi = float(len(Q[i]))
         value = R[i] + ri
-        limit = len(Q[i])              # Upper bound
+        limit = lenQi                  # Upper bound
         delta = value - limit
 
         if delta > 0:
@@ -206,13 +212,14 @@ def CGC (Q, A, R, D, n):
 
     # First rule
     if not exceedsServerCapacity(Q, n):
-        r = 0                          # Remainder
+        r = 0.0                        # Remainder
         for i in range(0, I):
             ri = r / (I - i)           # Queue remainder
             r -= ri                    # Use queue remainder
 
+            lenQi = float(len(Q[i]))
             value = R[i] + ri
-            limit = len(Q[i]) / 2      # Upper bound
+            limit = lenQi / 2          # Upper bound
             delta = value - limit
 
             if delta > 0:
@@ -224,73 +231,81 @@ def CGC (Q, A, R, D, n):
     # Second rule
     else:
         loss = (sumQ(Q) - C[n]) / I    # Distributed loss
-        r = 0                          # Remainder
+        r = 0.0                        # Remainder
         for i in range(0, I):
             ri = r / (I - i)           # Queue remainder
             r -= ri                    # Use queue remainder
 
+            lenQi = float(len(Q[i]))
             value = loss + ri
-            limit = len(Q[i]) / 2      # Lower bound
+            limit = lenQi / 2          # Lower bound
             delta = value - limit
 
             if delta > 0:
                 r += delta
                 value = limit
             else:
-                value = len(Q[i]) - value
+                value = lenQi - value
 
             R[i] = value
 
     return (Q, R, D)
 
 # Test
+total = 0.0
 for n in range(0, N):
     # Determine arrivals
     A = np.empty(I)
     for i in range(0, I):
         A[i] = np.random.poisson(AI[i])
 
+    total += sum(A)
+
     # FCFS
     Qf = increaseTIQ(Qf)
     Qf, Rf, Df = FCFS(Qf, A, Rf, Df, n)
 
     FF_WIP += sumQ(Qf)
-    FF_TH  += sum(Rf)
 
     # RR
     Qr = increaseTIQ(Qr)
     Qr, Rr, Dr = RR(Qr, A, Rr, Dr, n)
 
     RR_WIP += sumQ(Qr)
-    RR_TH  += sum(Rr)
 
     # CGC
     Qc = increaseTIQ(Qc)
     Qc, Rc, Dc =  CGC(Qc, A, Rc, Dc, n)
 
     CGC_WIP += sumQ(Qc)
-    CGC_TH  += sum(Rc)
 
     # Dump
-    """
+    #"""
     print('Cn', C[n])
     print('A', A)
     print('Qf', Qf)
-    print('Rf', Rf)
-    print('Df', Df)
+    #print('Df', Df)
+    print('sum Df', countD(Df))
     print('Qr', Qr)
-    print('Rr', Rr)
-    print('Dr', Dr)
+    #print('Dr', Dr)
+    print('sum Dr', countD(Dr))
     print('Qc', Qc)
-    print('Rc', Rc)
-    print('Dc', Dc)
+    #print('Dc', Dc)
+    print('sum Dc', countD(Dc))
     print('Rule', 2 if exceedsServerCapacity(Qc, n) else 1)
     print('---')
-    """
+    print('Rf', Rf)
+    print('Rr', Rr)
+    print('Rc', Rc)
+    #"""
 
+print(total)
+print(countD(Df))
+print(countD(Dr))
+print(countD(Dc))
 # Totals FCFS
 FF_WIP = FF_WIP / N
-FF_TH = FF_TH / N
+FF_TH = countD(Df) / N
 FF_CT = FF_WIP / FF_TH
 
 print('FCFS ---')
@@ -303,7 +318,7 @@ print('V', varianceD(Df))
 
 # Totals RR
 RR_WIP = RR_WIP / N
-RR_TH = RR_TH / N
+RR_TH = countD(Dr) / N
 RR_CT = RR_WIP / RR_TH
 
 print('RR ---')
@@ -316,7 +331,7 @@ print('V', varianceD(Dr))
 
 # Totals CGC
 CGC_WIP = CGC_WIP / N
-CGC_TH = CGC_TH / N
+CGC_TH = countD(Dc) / N
 CGC_CT = CGC_WIP / CGC_TH
 
 print('CGC ---')
