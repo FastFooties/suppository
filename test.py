@@ -6,10 +6,10 @@ np.random.seed(3)
 
 # Configuration
 I = 3
-AI = [2, 8, 14]
-N = 5
+AI = [3, 8, 16]
+N = 5000
 C = np.empty(N)
-C.fill(25)
+C.fill(sum(AI))
 #C = np.random.poisson(50, N)
 
 # Other variables
@@ -19,6 +19,7 @@ Rf.fill(0)
 Df = [[] for q in range(0, I)]
 FF_WIP = 0.0
 FF_TH = 0.0
+Pf = []
 
 Qr = [[] for q in range(0, I)]
 Rr = np.empty(I)
@@ -26,6 +27,7 @@ Rr.fill(0)
 Dr = [[] for q in range(0, I)]
 RR_WIP = 0.0
 RR_TH = 0.0
+Pr = []
 
 Qc = [[] for q in range(0, I)]
 Rc = np.empty(I)
@@ -33,6 +35,7 @@ Rc.fill(0)
 Dc = [[] for q in range(0, I)]
 CGC_WIP = 0.0
 CGC_TH = 0.0
+Pc = []
 
 # Increase time in queue per period
 def increaseTIQ (Q):
@@ -97,7 +100,7 @@ def averageD (D):
 
     return avg
 
-def varianceD (D):
+def stdDev (D):
     avg = averageD(D)
     V = []
 
@@ -107,9 +110,13 @@ def varianceD (D):
         for d in D[i]:
             total += (D[i][d] - avg[i]) ** 2
 
-        V.append(total / len(D[i]))
+        V.append((total / len(D[i])) ** (0.5))
 
     return V
+
+def CV (D):
+    return stdDev(D) / averageD(D)
+
 
 # Queueing Disciplines
 # > First Come, First Served
@@ -187,7 +194,7 @@ def RR (Q, A, R, D, n):
         ri = r / (I - i)               # Queue remainder
         r -= ri                        # Use queue remainder
 
-        lenQi = float(len(Q[i]))
+        lenQi = len(Q[i])
         value = R[i] + ri
         limit = lenQi                  # Upper bound
         delta = value - limit
@@ -288,11 +295,15 @@ for n in range(0, N):
 
     FF_WIP += sumQ(Qf)
 
+    Pf.append(sumQ(Qf))
+
     # RR
     Qr = increaseTIQ(Qr)
     Qr, Rr, Dr = RR(Qr, A, Rr, Dr, n)
 
     RR_WIP += sumQ(Qr)
+
+    Pr.append(sumQ(Qr))
 
     # CGC
     Qc = increaseTIQ(Qc)
@@ -300,8 +311,10 @@ for n in range(0, N):
 
     CGC_WIP += sumQ(Qc)
 
+    Pc.append(sumQ(Qc))
+
     # Dump
-    #"""
+    """
     print('Cn', C[n])
     print('A', A)
     print('Qf', Qf)
@@ -318,7 +331,7 @@ for n in range(0, N):
     print('Rf', Rf)
     print('Rr', Rr)
     print('Rc', Rc)
-    #"""
+    """
 
 print(total)
 print(countD(Df))
@@ -335,7 +348,8 @@ print('TH', FF_TH)
 print('CT', FF_CT)
 #print('D', Df)
 print('Davg', averageD(Df))
-print('V', varianceD(Df))
+print('stdDev', stdDev(Df))
+print('CV', CV(Df))
 
 # Totals RR
 RR_WIP = RR_WIP / N
@@ -348,7 +362,8 @@ print('TH', RR_TH)
 print('CT', RR_CT)
 #print('D', Dr)
 print('Davg', averageD(Dr))
-print('V', varianceD(Dr))
+print('stdDev', stdDev(Dr))
+print('CV', CV(Dr))
 
 # Totals CGC
 CGC_WIP = CGC_WIP / N
@@ -361,4 +376,11 @@ print('TH', CGC_TH)
 print('CT', CGC_CT)
 #print('D', Dc)
 print('Davg', averageD(Dc))
-print('V', varianceD(Dc))
+print('stdDev', stdDev(Dc))
+print('CV', CV(Dc))
+
+plt.plot(Pf, label = "length queue FCFS")
+plt.plot(Pr, label = "length queue RR")
+plt.plot(Pc, label = "length queue CGC")
+plt.legend()
+plt.show()
