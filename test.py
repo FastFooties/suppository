@@ -7,11 +7,11 @@ np.random.seed(3)
 # Configuration
 I = 3
 AI = [3, 8, 16]
-N = 5000
+N = 50
 C = np.empty(N)
 C.fill(sum(AI))
 #C = np.random.poisson(50, N)
-S = 1 # Number of servers
+S = 2 # Number of servers
 
 # Servers
 class Server:
@@ -27,7 +27,7 @@ class Server:
 FFS = []
 RRS = []
 CGCS = []
-for s in range(0, S):
+for i in range(0, S):
     FFS.append(Server())
     RRS.append(Server())
     CGCS.append(Server())
@@ -320,81 +320,39 @@ for n in range(0, N):
         CGC(CGCS[s], Ac, n)
         Ac = [sum(d) for d in CGCS[s].D]
 
-#    # Dump
-#    """
-#    print('Cn', C[n])
-#    print('A', A)
-#    print('Qf', Qf)
-#    #print('Df', Df)
-#    print('sum Df', countD(Df))
-#    print('Qr', Qr)
-#    #print('Dr', Dr)
-#    print('sum Dr', countD(Dr))
-#    print('Qc', Qc)
-#    #print('Dc', Dc)
-#    print('sum Dc', countD(Dc))
-#    print('Rule', rule)
-#    print('---')
-#    print('Rf', Rf)
-#    print('Rr', Rr)
-#    print('Rc', Rc)
-#    """
-#
+# Totals
+def printResults (i, s):
+    print('Server %d' % (i + 1))
+    WIP = float(sum(s.P)) / N
+    TH = countD(s.D) / N
+    CT = WIP / TH
+    print('WIP', WIP)
+    print('TH', TH)
+    print('CT', CT)
+    print('Davg', averageD(s.D))
+    print('stdDev', stdDev(s.D))
+    print('CV', CV(s.D))
+    print('')
 
-Df = FFS[0].D
-Dr = RRS[0].D
-Dc = CGCS[0].D
-Pf = FFS[0].P
-Pr = RRS[0].P
-Pc = CGCS[0].P
+# > Totals FCFS
+print('=== Totals FCFS ===')
 
-print(total)
-print(countD(Df))
-print(countD(Dr))
-print(countD(Dc))
+for i in range(0, S):
+    printResults(i, FFS[i])
 
-# Totals FCFS
-FF_WIP = float(sum(Pf)) / N
-FF_TH = countD(Df) / N
-FF_CT = FF_WIP / FF_TH
+# > Totals RR
+print('=== Totals RR ===')
 
-print('FCFS ---')
-print('WIP', FF_WIP)
-print('TH', FF_TH)
-print('CT', FF_CT)
-#print('D', Df)
-print('Davg', averageD(Df))
-print('stdDev', stdDev(Df))
-print('CV', CV(Df))
+for i in range(0, S):
+    printResults(i, RRS[i])
 
-# Totals RR
-RR_WIP = float(sum(Pr)) / N
-RR_TH = countD(Dr) / N
-RR_CT = RR_WIP / RR_TH
+# > Totals CGC
+print('=== Totals CGC ===')
 
-print('RR ---')
-print('WIP', RR_WIP)
-print('TH', RR_TH)
-print('CT', RR_CT)
-#print('D', Dr)
-print('Davg', averageD(Dr))
-print('stdDev', stdDev(Dr))
-print('CV', CV(Dr))
+for i in range(0, S):
+    printResults(i, CGCS[i])
 
-# Totals CGC
-CGC_WIP = float(sum(Pc)) / N
-CGC_TH = countD(Dc) / N
-CGC_CT = CGC_WIP / CGC_TH
-
-print('CGC ---')
-print('WIP', CGC_WIP)
-print('TH', CGC_TH)
-print('CT', CGC_CT)
-#print('D', Dc)
-print('Davg', averageD(Dc))
-print('stdDev', stdDev(Dc))
-print('CV', CV(Dc))
-
+# Plotting
 plt.plot(Pf, label = "length queue FCFS")
 plt.plot(Pr, label = "length queue RR")
 plt.plot(Pc, label = "length queue CGC")
