@@ -11,38 +11,33 @@ N = 5000
 C = np.empty(N)
 C.fill(sum(AI))
 #C = np.random.poisson(50, N)
+S = 1 # Number of servers
 
-# Other variables
-Qf = [[] for q in range(0, I)]
-Rf = np.empty(I)
-Rf.fill(0)
-Df = [[] for q in range(0, I)]
-FF_WIP = 0.0
-FF_TH = 0.0
-Pf = []
+# Servers
+class Server:
+    def __init__ (self):
+        global I
+        self.Q = [[] for q in range(0, I)]
+        self.R = np.empty(I)
+        self.R.fill(0)
+        self.D = [[] for q in range(0, I)]
+        self.WIP = 0.0
+        self.P = []
+        self.rule = None
 
-Qr = [[] for q in range(0, I)]
-Rr = np.empty(I)
-Rr.fill(0)
-Dr = [[] for q in range(0, I)]
-RR_WIP = 0.0
-RR_TH = 0.0
-Pr = []
-
-Qc = [[] for q in range(0, I)]
-Rc = np.empty(I)
-Rc.fill(0)
-Dc = [[] for q in range(0, I)]
-CGC_WIP = 0.0
-CGC_TH = 0.0
-Pc = []
+FFS = []
+RRS = []
+CGCS = []
+for s in range(0, S):
+    FFS.append(Server())
+    RRS.append(Server())
+    CGCS.append(Server())
 
 # Increase time in queue per period
 def increaseTIQ (Q):
     for i in range(0, I):
         for q in range(0, len(Q[i])):
             Q[i][q] += 1
-    return Q
 
 # Sum of queue
 def sumQ (Q):
@@ -89,8 +84,6 @@ def determineNumberOfJobsInQ (Q, A, R, D):
 
         D[i] += d
 
-    return (Q, D)
-
 # Avarage departures
 def averageD (D):
     avg = np.empty(I)
@@ -120,8 +113,13 @@ def CV (D):
 
 # Queueing Disciplines
 # > First Come, First Served
-def FCFS (Q, A, R, D, n):
-    Q, D = determineNumberOfJobsInQ(Q, A, R, D)
+def FCFS (s, A, n):
+    Q = s.Q
+    R = s.R
+    D = s.D
+
+    increaseTIQ(Q)
+    determineNumberOfJobsInQ(Q, A, R, D)
 
     # Determine results
     R = [0.0 for r in R]
@@ -179,11 +177,20 @@ def FCFS (Q, A, R, D, n):
         c -= 1
         offset += 1                    # RR
 
-    return (Q, R, D)
+    s.Q = Q
+    s.R = R
+    s.D = D
+    s.WIP += sumQ(Q)
+    s.P.append(sumQ(Q))
 
 # > Round Robin
-def RR (Q, A, R, D, n):
-    Q, D = determineNumberOfJobsInQ(Q, A, R, D)
+def RR (s, A, n):
+    Q = s.Q
+    R = s.R
+    D = s.D
+
+    increaseTIQ(Q)
+    determineNumberOfJobsInQ(Q, A, R, D)
 
     # Start with equal split
     R = [C[n] / I for r in R]
@@ -208,7 +215,11 @@ def RR (Q, A, R, D, n):
     for i in range(0, int(r)):
         R[i % I] += 1
 
-    return (Q, R, D)
+    s.Q = Q
+    s.R = R
+    s.D = D
+    s.WIP += sumQ(Q)
+    s.P.append(sumQ(Q))
 
 # > Contested Garment Consistent
 
@@ -220,8 +231,13 @@ def halfTheSumOfTheClaims (Q):
 def exceedsServerCapacity (Q, n):
     return C[n] > halfTheSumOfTheClaims(Q)
 
-def CGC (Q, A, R, D, n):
-    Q, D = determineNumberOfJobsInQ(Q, A, R, D)
+def CGC (s, A, n):
+    Q = s.Q
+    R = s.R
+    D = s.D
+
+    increaseTIQ(Q)
+    determineNumberOfJobsInQ(Q, A, R, D)
 
     # Start with equal split
     R = [C[n] / I for r in R]
@@ -277,7 +293,12 @@ def CGC (Q, A, R, D, n):
     for i in range(0, int(round(x))):
         R[i % I] += 1
 
-    return (Q, R, D, rule)
+    s.Q = Q
+    s.R = R
+    s.D = D
+    s.WIP += sumQ(Q)
+    s.P.append(sumQ(Q))
+    s.rule = rule
 
 # Test
 total = 0.0
@@ -286,57 +307,59 @@ for n in range(0, N):
     A = np.empty(I)
     for i in range(0, I):
         A[i] = np.random.poisson(AI[i])
-
     total += sum(A)
 
-    # FCFS
-    Qf = increaseTIQ(Qf)
-    Qf, Rf, Df = FCFS(Qf, A, Rf, Df, n)
+    Af = list(A)
+    Ar = list(A)
+    Ac = list(A)
 
-    FF_WIP += sumQ(Qf)
+    # Servers
+    for s in range(0, S):
+        FCFS(FFS[s], Af, n)
+        Af = [sum(d) for d in FFS[s].D]
 
-    Pf.append(sumQ(Qf))
+        RR(RRS[s], Ar, n)
+        Ar = [sum(d) for d in RRS[s].D]
 
-    # RR
-    Qr = increaseTIQ(Qr)
-    Qr, Rr, Dr = RR(Qr, A, Rr, Dr, n)
+        CGC(CGCS[s], Ac, n)
+        Ac = [sum(d) for d in CGCS[s].D]
 
-    RR_WIP += sumQ(Qr)
+#    # Dump
+#    """
+#    print('Cn', C[n])
+#    print('A', A)
+#    print('Qf', Qf)
+#    #print('Df', Df)
+#    print('sum Df', countD(Df))
+#    print('Qr', Qr)
+#    #print('Dr', Dr)
+#    print('sum Dr', countD(Dr))
+#    print('Qc', Qc)
+#    #print('Dc', Dc)
+#    print('sum Dc', countD(Dc))
+#    print('Rule', rule)
+#    print('---')
+#    print('Rf', Rf)
+#    print('Rr', Rr)
+#    print('Rc', Rc)
+#    """
+#
 
-    Pr.append(sumQ(Qr))
-
-    # CGC
-    Qc = increaseTIQ(Qc)
-    Qc, Rc, Dc, rule =  CGC(Qc, A, Rc, Dc, n)
-
-    CGC_WIP += sumQ(Qc)
-
-    Pc.append(sumQ(Qc))
-
-    # Dump
-    """
-    print('Cn', C[n])
-    print('A', A)
-    print('Qf', Qf)
-    #print('Df', Df)
-    print('sum Df', countD(Df))
-    print('Qr', Qr)
-    #print('Dr', Dr)
-    print('sum Dr', countD(Dr))
-    print('Qc', Qc)
-    #print('Dc', Dc)
-    print('sum Dc', countD(Dc))
-    print('Rule', rule)
-    print('---')
-    print('Rf', Rf)
-    print('Rr', Rr)
-    print('Rc', Rc)
-    """
+Df = FFS[0].D
+Dr = RRS[0].D
+Dc = CGCS[0].D
+FF_WIP = FFS[0].WIP
+RR_WIP = RRS[0].WIP
+CGC_WIP = CGCS[0].WIP
+Pf = FFS[0].P
+Pr = RRS[0].P
+Pc = CGCS[0].P
 
 print(total)
 print(countD(Df))
 print(countD(Dr))
 print(countD(Dc))
+
 # Totals FCFS
 FF_WIP = FF_WIP / N
 FF_TH = countD(Df) / N
