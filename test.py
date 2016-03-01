@@ -21,7 +21,6 @@ class Server:
         self.R = np.empty(I)
         self.R.fill(0)
         self.D = [[] for q in range(0, I)]
-        self.WIP = 0.0
         self.P = []
         self.rule = None
 
@@ -180,7 +179,6 @@ def FCFS (s, A, n):
     s.Q = Q
     s.R = R
     s.D = D
-    s.WIP += sumQ(Q)
     s.P.append(sumQ(Q))
 
 # > Round Robin
@@ -218,7 +216,6 @@ def RR (s, A, n):
     s.Q = Q
     s.R = R
     s.D = D
-    s.WIP += sumQ(Q)
     s.P.append(sumQ(Q))
 
 # > Contested Garment Consistent
@@ -296,7 +293,6 @@ def CGC (s, A, n):
     s.Q = Q
     s.R = R
     s.D = D
-    s.WIP += sumQ(Q)
     s.P.append(sumQ(Q))
     s.rule = rule
 
@@ -348,9 +344,6 @@ for n in range(0, N):
 Df = FFS[0].D
 Dr = RRS[0].D
 Dc = CGCS[0].D
-FF_WIP = FFS[0].WIP
-RR_WIP = RRS[0].WIP
-CGC_WIP = CGCS[0].WIP
 Pf = FFS[0].P
 Pr = RRS[0].P
 Pc = CGCS[0].P
@@ -361,7 +354,7 @@ print(countD(Dr))
 print(countD(Dc))
 
 # Totals FCFS
-FF_WIP = FF_WIP / N
+FF_WIP = float(sum(Pf)) / N
 FF_TH = countD(Df) / N
 FF_CT = FF_WIP / FF_TH
 
@@ -375,7 +368,7 @@ print('stdDev', stdDev(Df))
 print('CV', CV(Df))
 
 # Totals RR
-RR_WIP = RR_WIP / N
+RR_WIP = float(sum(Pr)) / N
 RR_TH = countD(Dr) / N
 RR_CT = RR_WIP / RR_TH
 
@@ -389,7 +382,7 @@ print('stdDev', stdDev(Dr))
 print('CV', CV(Dr))
 
 # Totals CGC
-CGC_WIP = CGC_WIP / N
+CGC_WIP = float(sum(Pc)) / N
 CGC_TH = countD(Dc) / N
 CGC_CT = CGC_WIP / CGC_TH
 
