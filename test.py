@@ -11,7 +11,7 @@ N = 50
 C = np.empty(N)
 C.fill(sum(AI))
 #C = np.random.poisson(50, N)
-S = 2 # Number of servers
+S = 3 # Number of servers
 
 # Servers
 class Server:
@@ -353,8 +353,8 @@ for i in range(0, S):
     printResults(i, CGCS[i])
 
 # Plotting
-plt.plot(Pf, label = "length queue FCFS")
-plt.plot(Pr, label = "length queue RR")
-plt.plot(Pc, label = "length queue CGC")
-plt.legend()
-plt.show()
+#plt.plot(Pf, label = "length queue FCFS")
+#plt.plot(Pr, label = "length queue RR")
+#plt.plot(Pc, label = "length queue CGC")
+#plt.legend()
+#plt.show()
