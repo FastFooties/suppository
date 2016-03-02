@@ -21,6 +21,7 @@ class Server:
         self.R = np.empty(I)
         self.R.fill(0)
         self.D = [[] for q in range(0, I)]
+        self.LD = None # Last departures
         self.P = []
         self.rule = None
 
@@ -59,6 +60,8 @@ def countD (D):
 
 # Determine number of jobs in queue
 def determineNumberOfJobsInQ (Q, A, R, D):
+    counts = []
+
     for i in range(0, I):
         Qi = Q[i]
 
@@ -68,6 +71,7 @@ def determineNumberOfJobsInQ (Q, A, R, D):
 
         # No departures
         if R[i] == 0.0:
+            counts.append(0)
             continue
 
         # Pick R[i] amount of jobs from beginning of queue
@@ -82,6 +86,9 @@ def determineNumberOfJobsInQ (Q, A, R, D):
             Q[i] = []
 
         D[i] += d
+        counts.append(len(d))
+
+    return counts
 
 # Avarage departures
 def averageD (D):
@@ -118,7 +125,7 @@ def FCFS (s, A, n):
     D = s.D
 
     increaseTIQ(Q)
-    determineNumberOfJobsInQ(Q, A, R, D)
+    s.LD = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Determine results
     R = [0.0 for r in R]
@@ -188,7 +195,7 @@ def RR (s, A, n):
     D = s.D
 
     increaseTIQ(Q)
-    determineNumberOfJobsInQ(Q, A, R, D)
+    s.LD = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Start with equal split
     R = [C[n] / I for r in R]
@@ -234,7 +241,7 @@ def CGC (s, A, n):
     D = s.D
 
     increaseTIQ(Q)
-    determineNumberOfJobsInQ(Q, A, R, D)
+    s.LD = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Start with equal split
     R = [C[n] / I for r in R]
@@ -312,13 +319,13 @@ for n in range(0, N):
     # Servers
     for s in range(0, S):
         FCFS(FFS[s], Af, n)
-        Af = [sum(d) for d in FFS[s].D]
+        Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
-        Ar = [sum(d) for d in RRS[s].D]
+        Ar = RRS[s].LD
 
         CGC(CGCS[s], Ac, n)
-        Ac = [sum(d) for d in CGCS[s].D]
+        Ac = CGCS[s].LD
 
 # Totals
 def printResults (i, s):
