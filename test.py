@@ -7,7 +7,7 @@ np.random.seed(3)
 # Configuration
 I = 3
 AI = [3, 8, 16]
-N = 5
+N = 20
 S = 3 # Number of servers
 
 # Servers
@@ -107,7 +107,7 @@ def stdDev (D):
         total = 0
 
         for d in D[i]:
-            total += (D[i][d] - avg[i]) ** 2
+            total += (d - avg[i]) ** 2
 
         V.append((total / len(D[i])) ** (0.5))
 
@@ -115,7 +115,6 @@ def stdDev (D):
 
 def CV (D):
     return stdDev(D) / averageD(D)
-
 
 # Queueing Disciplines
 # > First Come, First Served
@@ -246,7 +245,6 @@ def CGC (s, A, n):
     # Start with equal split
     c = s.c
     R = [c / I for r in R]
-
     x = 0.0
 
     # First rule
@@ -309,9 +307,9 @@ def printServer (label, s, A):
     print('Server %s' % label)
     print('A', A)
     print('Q', s.Q)
-    print('R', s.R)
     print('D', s.D)
     print('P', s.P)
+    print('R', s.R)
     print('')
 
 for n in range(0, N):
@@ -329,15 +327,15 @@ for n in range(0, N):
     # Servers
     for s in range(0, S):
         FCFS(FFS[s], Af, n)
-        printServer('FFS %d' % (s + 1), FFS[s], Af)
+        #printServer('FFS %d' % (s + 1), FFS[s], Af)
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
-        printServer('RRS %d' % (s + 1), RRS[s], Ar)
+        #printServer('RRS %d' % (s + 1), RRS[s], Ar)
         Ar = RRS[s].LD
 
         CGC(CGCS[s], Ac, n)
-        printServer('CGCS %d' % (s + 1), CGCS[s], Ac)
+        #printServer('CGCS %d' % (s + 1), CGCS[s], Ac)
         Ac = CGCS[s].LD
 
 # Totals
