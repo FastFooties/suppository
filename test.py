@@ -352,13 +352,16 @@ def printResults (i, s):
     print('CV', CV(s.D))
     print('')
 
+plotServer = 1
+
 # > Totals FCFS
 print('=== Totals FCFS ===')
 
 for i in range(0, S):
     s = FFS[i]
     printResults(i, s)
-    plt.plot(s.P, label = 'length queue FCFS S%d' % (i + 1))
+    if (i + 1 === plotServer):
+        plt.plot(s.P, label = 'length queue FCFS S%d' % (i + 1))
 
 # > Totals RR
 print('=== Totals RR ===')
@@ -366,7 +369,8 @@ print('=== Totals RR ===')
 for i in range(0, S):
     s = RRS[i]
     printResults(i, s)
-    plt.plot(s.P, label = 'length queue RR S%d' % (i + 1))
+    if (i + 1 === plotServer):
+        plt.plot(s.P, label = 'length queue RR S%d' % (i + 1))
 
 # > Totals CGC
 print('=== Totals CGC ===')
@@ -374,7 +378,8 @@ print('=== Totals CGC ===')
 for i in range(0, S):
     s = CGCS[i]
     printResults(i, s)
-    plt.plot(s.P, label = 'length queue CGC S%d' % (i + 1))
+    if (i + 1 === plotServer):
+        plt.plot(s.P, label = 'length queue CGC S%d' % (i + 1))
 
 # Show plot
 plt.legend()
