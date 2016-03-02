@@ -305,8 +305,9 @@ def CGC (s, A, n):
     s.rule = rule
 
 # Test
-def printServer (label, s):
+def printServer (label, s, A):
     print('Server %s' % label)
+    print('A', A)
     print('Q', s.Q)
     print('R', s.R)
     print('D', s.D)
@@ -328,16 +329,16 @@ for n in range(0, N):
     # Servers
     for s in range(0, S):
         FCFS(FFS[s], Af, n)
+        printServer('FFS %d' % (s + 1), FFS[s], Af)
         Af = FFS[s].LD
-        printServer('FFS %d' % (s + 1), FFS[s])
 
         RR(RRS[s], Ar, n)
+        printServer('RRS %d' % (s + 1), RRS[s], Ar)
         Ar = RRS[s].LD
-        printServer('RRS %d' % (s + 1), RRS[s])
 
         CGC(CGCS[s], Ac, n)
+        printServer('CGCS %d' % (s + 1), CGCS[s], Ac)
         Ac = CGCS[s].LD
-        printServer('CGCS %d' % (s + 1), CGCS[s])
 
 # Totals
 def printResults (i, s):
