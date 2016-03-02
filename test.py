@@ -305,13 +305,11 @@ def CGC (s, A, n):
     s.rule = rule
 
 # Test
-total = 0.0
 for n in range(0, N):
     # Determine arrivals
     A = np.empty(I)
     for i in range(0, I):
         A[i] = np.random.poisson(AI[i])
-    total += sum(A)
 
     Af = list(A)
     Ar = list(A)
