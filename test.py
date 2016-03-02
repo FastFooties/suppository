@@ -356,23 +356,26 @@ def printResults (i, s):
 print('=== Totals FCFS ===')
 
 for i in range(0, S):
-    printResults(i, FFS[i])
+    s = FFS[i]
+    printResults(i, s)
+    plt.plot(s.P, label = 'length queue FCFS S%d' % (i + 1))
 
 # > Totals RR
 print('=== Totals RR ===')
 
 for i in range(0, S):
-    printResults(i, RRS[i])
+    s = RRS[i]
+    printResults(i, s)
+    plt.plot(s.P, label = 'length queue RR S%d' % (i + 1))
 
 # > Totals CGC
 print('=== Totals CGC ===')
 
 for i in range(0, S):
-    printResults(i, CGCS[i])
+    s = CGCS[i]
+    printResults(i, s)
+    plt.plot(s.P, label = 'length queue CGC S%d' % (i + 1))
 
-# Plotting
-#plt.plot(Pf, label = "length queue FCFS")
-#plt.plot(Pr, label = "length queue RR")
-#plt.plot(Pc, label = "length queue CGC")
-#plt.legend()
-#plt.show()
+# Show plot
+plt.legend()
+plt.show()
