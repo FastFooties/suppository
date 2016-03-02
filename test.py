@@ -6,7 +6,7 @@ np.random.seed(3)
 
 # Configuration
 I = 3
-AI = [[3, 8, 16], [2, 7, 15], [1, 6, 14]]
+AI = [3, 8, 16]
 N = 50
 S = 3 # Number of servers
 
@@ -26,11 +26,12 @@ class Server:
 FFS = []
 RRS = []
 CGCS = []
+c = float(sum(AI))
 for i in range(0, S):
-    c = float(sum(AI[i]))
     FFS .append(Server(c))
     RRS .append(Server(c))
     CGCS.append(Server(c))
+    c -= 1
 
 # Increase time in queue per period
 def increaseTIQ (Q):
@@ -309,7 +310,7 @@ for n in range(0, N):
     # Determine arrivals
     A = np.empty(I)
     for i in range(0, I):
-        A[i] = np.random.poisson(AI[0][i])
+        A[i] = np.random.poisson(AI[i])
     total += sum(A)
 
     Af = list(A)
