@@ -6,17 +6,15 @@ np.random.seed(3)
 
 # Configuration
 I = 3
-AI = [3, 8, 16]
+AI = [[3, 8, 16], [2, 7, 15], [1, 6, 14]]
 N = 50
-C = np.empty(N)
-C.fill(sum(AI))
-#C = np.random.poisson(50, N)
 S = 3 # Number of servers
 
 # Servers
 class Server:
-    def __init__ (self):
+    def __init__ (self, c):
         global I
+        self.c = c
         self.Q = [[] for q in range(0, I)]
         self.R = np.empty(I)
         self.R.fill(0)
@@ -29,9 +27,10 @@ FFS = []
 RRS = []
 CGCS = []
 for i in range(0, S):
-    FFS.append(Server())
-    RRS.append(Server())
-    CGCS.append(Server())
+    c = float(sum(AI[i]))
+    FFS .append(Server(c))
+    RRS .append(Server(c))
+    CGCS.append(Server(c))
 
 # Increase time in queue per period
 def increaseTIQ (Q):
@@ -129,7 +128,7 @@ def FCFS (s, A, n):
 
     # Determine results
     R = [0.0 for r in R]
-    c = C[n]
+    c = s.c
     offset = 0
     indexes = [0 for r in R]
 
@@ -198,7 +197,7 @@ def RR (s, A, n):
     s.LD = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Start with equal split
-    R = [C[n] / I for r in R]
+    R = [s.c / I for r in R]
 
     # Divide overcapacity on to other queues
     r = 0.0
@@ -232,8 +231,8 @@ def halfTheSumOfTheClaims (Q):
     return sumQ(Q) / 2
 
 # Determine rule (determine x)
-def exceedsServerCapacity (Q, n):
-    return C[n] > halfTheSumOfTheClaims(Q)
+def exceedsServerCapacity (c, Q):
+    return c > halfTheSumOfTheClaims(Q)
 
 def CGC (s, A, n):
     Q = s.Q
@@ -244,12 +243,13 @@ def CGC (s, A, n):
     s.LD = determineNumberOfJobsInQ(Q, A, R, D)
 
     # Start with equal split
-    R = [C[n] / I for r in R]
+    c = s.c
+    R = [c / I for r in R]
 
     x = 0.0
 
     # First rule
-    if not exceedsServerCapacity(Q, n):
+    if not exceedsServerCapacity(c, Q):
         rule = 1
         r = 0.0                        # Remainder
         for i in range(0, I):
@@ -272,7 +272,7 @@ def CGC (s, A, n):
     # Second rule
     else:
         rule = 2
-        loss = (sumQ(Q) - C[n]) / I    # Distributed loss
+        loss = (sumQ(Q) - c) / I       # Distributed loss
         r = 0.0                        # Remainder
         for i in range(0, I):
             ri = r / (I - i)           # Queue remainder
@@ -309,7 +309,7 @@ for n in range(0, N):
     # Determine arrivals
     A = np.empty(I)
     for i in range(0, I):
-        A[i] = np.random.poisson(AI[i])
+        A[i] = np.random.poisson(AI[0][i])
     total += sum(A)
 
     Af = list(A)
