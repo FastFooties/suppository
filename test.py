@@ -7,7 +7,7 @@ np.random.seed(3)
 # Configuration
 I = 3
 AI = [3, 8, 16]
-N = 50
+N = 5
 S = 3 # Number of servers
 
 # Servers
@@ -305,7 +305,17 @@ def CGC (s, A, n):
     s.rule = rule
 
 # Test
+def printServer (label, s):
+    print('Server %s' % label)
+    print('Q', s.Q)
+    print('R', s.R)
+    print('D', s.D)
+    print('P', s.P)
+    print('')
+
 for n in range(0, N):
+    print('=== Period %d ===' % n)
+
     # Determine arrivals
     A = np.empty(I)
     for i in range(0, I):
@@ -319,12 +329,15 @@ for n in range(0, N):
     for s in range(0, S):
         FCFS(FFS[s], Af, n)
         Af = FFS[s].LD
+        printServer('FFS %d' % (s + 1), FFS[s])
 
         RR(RRS[s], Ar, n)
         Ar = RRS[s].LD
+        printServer('RRS %d' % (s + 1), RRS[s])
 
         CGC(CGCS[s], Ac, n)
         Ac = CGCS[s].LD
+        printServer('CGCS %d' % (s + 1), CGCS[s])
 
 # Totals
 def printResults (i, s):
