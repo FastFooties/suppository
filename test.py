@@ -315,7 +315,7 @@ def printServer (label, s, A):
     print('')
 
 for n in range(0, N):
-    print('=== Period %d ===' % n)
+    print('=== Period %d ===' % (n + 1))
 
     # Determine arrivals
     A = np.empty(I)
