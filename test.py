@@ -187,7 +187,7 @@ for config in configs:
 
             # No more jobs
             else:
-                R[offset % I] += 1
+                R[I - 1] += 1
 
             c -= 1
             offset += 1                    # RR
@@ -226,8 +226,7 @@ for config in configs:
 
             R[i] = value
 
-        for i in range(0, int(r)):
-            R[i % I] += 1
+        R[I - 1] += int(r)
 
         s.Q = Q
         s.R = R
@@ -303,8 +302,7 @@ for config in configs:
                 x += rest
                 R[i] = value
 
-        for i in range(0, int(round(x))):
-            R[i % I] += 1
+        R[I - 1] += round(x)
 
         s.Q = Q
         s.R = R
