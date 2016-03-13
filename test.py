@@ -68,6 +68,27 @@ for config in configs:
             count += len(D[i])
         return count
 
+    # Correct R
+    def correctR (s, A):
+        # Properly assign remainder based on arrivals
+        for i in range (0, I):
+            delta = s.R[i] - (len(s.Q[i]) + A[i])
+
+            if delta < 1:
+                continue
+
+            s.R[i] -= delta
+
+            # Respread overcapacity
+            j = 0
+            while delta > 0:
+                # Don't assign to own queue
+                if i != j:
+                    s.R[j] += 1
+                    delta -= 1
+
+                j = (j + 1) % I # Next queue
+
     # Determine number of jobs in queue
     def determineNumberOfJobsInQ (Q, A, R, D):
         counts = []
@@ -199,6 +220,8 @@ for config in configs:
 
     # > Round Robin
     def RR (s, A, n):
+        correctR(s, A)
+
         Q = s.Q
         R = s.R
         D = s.D
@@ -209,7 +232,7 @@ for config in configs:
         # Start with equal split
         R = [s.c / I for r in R]
 
-        # Divide overcapacity on to other queues
+        # Divide overcapacity onto other queues
         r = 0.0
         for i in range(0, I):
             ri = r / (I - i)               # Queue remainder
@@ -224,6 +247,8 @@ for config in configs:
                 r += delta
                 value = limit
 
+            value, rest = roundRest(value)
+            r += rest
             R[i] = value
 
         R[I - 1] += int(r)
@@ -244,6 +269,8 @@ for config in configs:
         return c > halfTheSumOfTheClaims(Q)
 
     def CGC (s, A, n):
+        correctR(s, A)
+
         Q = s.Q
         R = s.R
         D = s.D
