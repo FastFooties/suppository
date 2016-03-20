@@ -78,9 +78,8 @@ for config in configs:
 
     # Correct R
     def correctR (s, A):
-        return
         # Properly assign remainder based on arrivals
-        for i in range (0, I):
+        for i in range (0, I - 1):
             delta = s.R[i] - (len(s.Q[i]) + A[i])
 
             if delta < 1:
@@ -91,8 +90,8 @@ for config in configs:
             # Respread overcapacity
             j = 0
             while delta > 0:
-                # Don't assign to own queue
-                if i != j:
+                # Don't assign to own or previous queues
+                if j > i:
                     s.R[j] += 1
                     delta -= 1
 
@@ -159,6 +158,8 @@ for config in configs:
     # Queueing Disciplines
     # > First Come, First Served
     def FCFS (s, A, n):
+        correctR(s, A)
+
         Q = s.Q
         R = s.R
         D = s.D
@@ -218,7 +219,7 @@ for config in configs:
 
             # No more jobs
             else:
-                R[I - 1] += 1
+                R[0] += 1
 
             c -= 1
             offset += 1                    # RR
@@ -262,7 +263,7 @@ for config in configs:
             r += rest
             R[i] = value
 
-        R[I - 1] += int(r)
+        R[0] += int(r)
 
         s.Q = Q
         s.R = R
@@ -341,7 +342,7 @@ for config in configs:
                 x += rest
                 R[i] = value
 
-        R[I - 1] += round(x)
+        R[0] += round(x)
 
         s.Q = Q
         s.R = R
