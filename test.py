@@ -3,11 +3,14 @@ import math
 import matplotlib.pylab as plt
 
 configs = [
+    [3, 1]
+]
+"""
     [3, 1],
     [5, 3],
     [7, 5],
     [9, 8]
-]
+"""
 
 print('seed;fai;queue;avgD_a;avgD_b;avgD_c;CV_a;CV_b;CB_c')
 
@@ -49,12 +52,16 @@ for config in configs:
             for q in range(0, len(Q[i])):
                 Q[i][q] += 1
 
+    # Length of queues
+    def lenQ (Q):
+        totals = []
+        for i in range(0, I):
+            totals.append(len(Q[i]))
+        return totals
+
     # Sum of queue
     def sumQ (Q):
-        total = 0
-        for i in range(0, I):
-            total += len(Q[i])
-        return total
+        return sum(lenQ(Q))
 
     # Round with rest
     def roundRest (value):
@@ -339,6 +346,7 @@ for config in configs:
 
     # Test
     def printServer (label, s, A):
+        """
         print('Server %s' % label)
         print('A', A)
         print('Q', s.Q)
@@ -346,9 +354,11 @@ for config in configs:
         print('P', s.P)
         print('R', s.R)
         print('')
+        """
+        print('%s A, R, LD, Q, length Q' % label, A, s.R, s.LD, lenQ(s.Q), s.P[-1])
 
     for n in range(0, N):
-        #print('=== Period %d ===' % (n + 1))
+        print('=== Period %d ===' % (n + 1))
 
         # Determine arrivals
         A = np.empty(I)
@@ -362,15 +372,15 @@ for config in configs:
         # Servers
         for s in range(0, S):
             FCFS(FFS[s], Af, n)
-            #printServer('FFS %d' % (s + 1), FFS[s], Af)
+            printServer('FFS %d' % (s + 1), FFS[s], Af)
             Af = FFS[s].LD
 
             RR(RRS[s], Ar, n)
-            #printServer('RRS %d' % (s + 1), RRS[s], Ar)
+            printServer('RRS %d' % (s + 1), RRS[s], Ar)
             Ar = RRS[s].LD
 
             CGC(CGCS[s], Ac, n)
-            #printServer('CGCS %d' % (s + 1), CGCS[s], Ac)
+            printServer('CGCS %d' % (s + 1), CGCS[s], Ac)
             Ac = CGCS[s].LD
 
     # Totals
