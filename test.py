@@ -32,6 +32,7 @@ for config in configs:
             self.R = np.empty(I)
             self.R.fill(0)
             self.D = [[] for q in range(0, I)]
+            self.LR = None # Last R
             self.LD = None # Last departures
             self.P = []
             self.rule = None
@@ -77,6 +78,7 @@ for config in configs:
 
     # Correct R
     def correctR (s, A):
+        return
         # Properly assign remainder based on arrivals
         for i in range (0, I):
             delta = s.R[i] - (len(s.Q[i]) + A[i])
@@ -160,6 +162,7 @@ for config in configs:
         Q = s.Q
         R = s.R
         D = s.D
+        s.LR = list(R)
 
         increaseTIQ(Q)
         s.LD = determineNumberOfJobsInQ(Q, A, R, D)
@@ -232,6 +235,7 @@ for config in configs:
         Q = s.Q
         R = s.R
         D = s.D
+        s.LR = list(R)
 
         increaseTIQ(Q)
         s.LD = determineNumberOfJobsInQ(Q, A, R, D)
@@ -281,6 +285,7 @@ for config in configs:
         Q = s.Q
         R = s.R
         D = s.D
+        s.LR = list(R)
 
         increaseTIQ(Q)
         s.LD = determineNumberOfJobsInQ(Q, A, R, D)
@@ -348,6 +353,7 @@ for config in configs:
     def printServer (label, s, A):
         """
         print('Server %s' % label)
+        print('LR', s.LR)
         print('A', A)
         print('Q', s.Q)
         print('D', s.D)
@@ -355,7 +361,7 @@ for config in configs:
         print('R', s.R)
         print('')
         """
-        print('%s A, R, LD, Q, length Q' % label, A, s.R, s.LD, lenQ(s.Q), s.P[-1])
+        print('%s LR, A, R, LD, Q, length Q' % label, s.LR, A, s.R, s.LD, lenQ(s.Q), s.P[-1])
 
     for n in range(0, N):
         print('=== Period %d ===' % (n + 1))
