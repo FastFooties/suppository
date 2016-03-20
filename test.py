@@ -28,10 +28,10 @@ for config in configs:
         def __init__ (self, c):
             global I
             self.c = c
-            self.Q = [[] for q in range(0, I)]
+            self.Q = [[] for q in range(I)]
             self.R = np.empty(I)
             self.R.fill(0)
-            self.D = [[] for q in range(0, I)]
+            self.D = [[] for q in range(I)]
             self.LR = None # Last R
             self.LD = None # Last departures
             self.P = []
@@ -41,7 +41,7 @@ for config in configs:
     RRS = []
     CGCS = []
     c = float(sum(AI))
-    for i in range(0, S):
+    for i in range(S):
         FFS .append(Server(c))
         RRS .append(Server(c))
         CGCS.append(Server(c))
@@ -49,14 +49,14 @@ for config in configs:
 
     # Increase time in queue per period
     def increaseTIQ (Q):
-        for i in range(0, I):
-            for q in range(0, len(Q[i])):
+        for i in range(I):
+            for q in range(len(Q[i])):
                 Q[i][q] += 1
 
     # Length of queues
     def lenQ (Q):
         totals = []
-        for i in range(0, I):
+        for i in range(I):
             totals.append(len(Q[i]))
         return totals
 
@@ -72,7 +72,7 @@ for config in configs:
     # Count departures
     def countD (D):
         count = 0.0
-        for i in range(0, I):
+        for i in range(I):
             count += len(D[i])
         return count
 
@@ -101,11 +101,11 @@ for config in configs:
     def determineNumberOfJobsInQ (Q, A, R, D):
         counts = []
 
-        for i in range(0, I):
+        for i in range(I):
             Qi = Q[i]
 
             # Add arrivals
-            for j in range(0, int(A[i])):
+            for j in range(int(A[i])):
                 Qi.append(0)
 
             # No departures
@@ -133,7 +133,7 @@ for config in configs:
     def averageD (D):
         avg = np.empty(I)
 
-        for i in range(0, I):
+        for i in range(I):
             avg[i] = float(sum(D[i])) / len(D[i])
 
         return avg
@@ -142,7 +142,7 @@ for config in configs:
         avg = averageD(D)
         V = []
 
-        for i in range(0, I):
+        for i in range(I):
             total = 0
 
             for d in D[i]:
@@ -153,7 +153,14 @@ for config in configs:
         return V
 
     def CV (D):
-        return stdDev(D) / averageD(D)
+        cv = []
+        std = stdDev(D)
+        avg = averageD(D)
+
+        for i in range(I):
+            cv.append(std[i] / avg[i] if avg[i] > 0 else 0.0)
+
+        return cv
 
     # Queueing Disciplines
     # > First Come, First Served
@@ -178,7 +185,7 @@ for config in configs:
             # First rule: handle longest waiting job
             high = 0
             queues = []
-            for i in range(0, I):
+            for i in range(I):
                 i = (i + offset) % I       # Round-Robin cycle
                 Qi = Q[i]
                 index = indexes[i]
@@ -246,7 +253,7 @@ for config in configs:
 
         # Divide overcapacity onto other queues
         r = 0.0
-        for i in range(0, I):
+        for i in range(I):
             ri = r / (I - i)               # Queue remainder
             r -= ri                        # Use queue remainder
 
@@ -300,7 +307,7 @@ for config in configs:
         if not exceedsServerCapacity(c, Q):
             rule = 1
             r = 0.0                        # Remainder
-            for i in range(0, I):
+            for i in range(I):
                 ri = r / (I - i)           # Queue remainder
                 r -= ri                    # Use queue remainder
 
@@ -322,7 +329,7 @@ for config in configs:
             rule = 2
             loss = (sumQ(Q) - c) / I       # Distributed loss
             r = 0.0                        # Remainder
-            for i in range(0, I):
+            for i in range(I):
                 ri = r / (I - i)           # Queue remainder
                 ri = r
                 r -= ri                    # Use queue remainder
@@ -364,12 +371,12 @@ for config in configs:
         """
         print('%s LR, A, R, LD, Q, length Q' % label, s.LR, A, s.R, s.LD, lenQ(s.Q), s.P[-1])
 
-    for n in range(0, N):
+    for n in range(N):
         print('=== Period %d ===' % (n + 1))
 
         # Determine arrivals
         A = np.empty(I)
-        for i in range(0, I):
+        for i in range(I):
             A[i] = np.random.poisson(AI[i])
 
         Af = list(A)
@@ -377,7 +384,7 @@ for config in configs:
         Ac = list(A)
 
         # Servers
-        for s in range(0, S):
+        for s in range(S):
             FCFS(FFS[s], Af, n)
             printServer('FFS %d' % (s + 1), FFS[s], Af)
             Af = FFS[s].LD
@@ -395,20 +402,21 @@ for config in configs:
         global config
         output = '%d;%d;%s;' % (config[0], config[1], label)
         output += ';'.join(map(str, averageD(s.D)))
+        output += ';'
         output += ';'.join(map(str, CV(s.D)))
         print(output)
 
     # > Totals FCFS
-    for i in range(0, S):
+    for i in range(S):
         s = FFS[i]
         printResults('FCFS s%s' % (i + 1), s)
 
     # > Totals RR
-    for i in range(0, S):
+    for i in range(S):
         s = RRS[i]
         printResults('RR s%s' % (i + 1), s)
 
     # > Totals CGC
-    for i in range(0, S):
+    for i in range(S):
         s = CGCS[i]
         printResults('CGC s%s' % (i + 1), s)
