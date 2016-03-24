@@ -2,15 +2,22 @@ import numpy as np
 import math
 import matplotlib.pylab as plt
 
-np.random.seed(3)
+np.random.seed(3)       # Random number generator
 
 # Configuration
-I = 3
-AI = [1, 8, 16]
-N = 20
-S = 3 # Number of servers
+I = 3                   # Number of Queues
+AI = [1, 8, 16]         # Average arrivals
+N = 5000                # Number of Periods
+S = 1                   # Number of servers
+plotServer = 2          # Which server plot
 
 # Servers
+N = N + 1
+plotServer = min(plotServer,S)
+ra = sum(AI)
+print(ra)
+
+
 class Server:
     def __init__ (self, c):
         global I
@@ -27,12 +34,19 @@ class Server:
 FFS = []
 RRS = []
 CGCS = []
-c = float(sum(AI))
+c = np.ceil(ra * 1.01)  # Determine capacity of servers
+
+print('Capacity', c)
+print('')
+
+te = 1 / c
+print(te)
+
 for i in range(S):
     FFS .append(Server(c))
     RRS .append(Server(c))
     CGCS.append(Server(c))
-    c -= 1
+    c -= 1                  # Determine capacity of subsequent servers
 
 # Increase time in queue per period
 def increaseTIQ (Q):
@@ -91,28 +105,27 @@ def determineNumberOfJobsInQ (Q, A, R, D):
     for i in range(I):
         Qi = Q[i]
 
-        # Add arrivals
-        for j in range(int(A[i])):
-            Qi.append(0)
-
         # No departures
         if R[i] == 0.0:
             counts.append(0)
-            continue
-
-        # Pick R[i] amount of jobs from beginning of queue
-        if len(Qi) > R[i]:
-            r = int(R[i])
-            d = Qi[:r]
-            Q[i] = Qi[r:]
-
-        # Depart all
         else:
-            d = Qi[:]
-            Q[i] = []
+            # Pick R[i] amount of jobs from beginning of queue
+            if len(Qi) > R[i]:
+                r = int(R[i])
+                d = Qi[:r]
+                Q[i] = Qi[r:]
 
-        D[i] += d
-        counts.append(len(d))
+            # Depart all
+            else:
+                d = Qi[:]
+                Q[i] = []
+
+                D[i] += d
+                counts.append(len(d))
+
+        # Add arrivals
+        for j in range(int(A[i])):
+            Qi.append(0)
 
     return counts
 
@@ -221,7 +234,7 @@ def FCFS (s, A, n):
     s.Q = Q
     s.R = R
     s.D = D
-    s.P.append(sumQ(Q))
+    s.P.append(sumQ(Q))                # Total length queue
 
 # > Round Robin
 def RR (s, A, n):
@@ -262,7 +275,7 @@ def RR (s, A, n):
     s.Q = Q
     s.R = R
     s.D = D
-    s.P.append(sumQ(Q))
+    s.P.append(sumQ(Q))                  # Total length queue
 
 # > Contested Garment Consistent
 
@@ -341,12 +354,22 @@ def CGC (s, A, n):
     s.Q = Q
     s.R = R
     s.D = D
-    s.P.append(sumQ(Q))
+    s.P.append(sumQ(Q))                 # Total length queue
     s.rule = rule
 
 # Test
 def printServer (label, s, A):
-    print('%s LR, A, R, LD, Q, length Q' % label, s.LR, A, s.R, s.LD, lenQ(s.Q), s.P[-1])
+    #print('%s LR, A, R, LD, Q, length Q' % label, s.LR, A, s.R, s.LD, lenQ(s.Q), s.P[-1])
+    print('Period', n)
+    print('Server %s' % label)
+    print('A', A)
+    #print('Sum Arrivals', sum(A))
+    print('Q', s.Q)
+    print('D', s.D)
+    print('P', s.P)
+    print('R', s.R)
+    print('')
+
 
 for n in range(N):
     #print('=== Period %d ===' % (n + 1))
@@ -363,7 +386,7 @@ for n in range(N):
     # Servers
     for s in range(S):
         FCFS(FFS[s], Af, n)
-        #printServer('FFS %d' % (s + 1), FFS[s], Af)
+        #printServer('FCFS %d' % (s + 1), FFS[s], Af)
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
@@ -388,9 +411,10 @@ def printResults (label, s):
     print('CV', CV(s.D))
     print('')
 
-plotServer = 1
 
 # > Totals FCFS
+print('=== Totals FCFS ===')
+
 for i in range(S):
     s = FFS[i]
     printResults('FCFS s%s' % (i + 1), s)
@@ -398,6 +422,8 @@ for i in range(S):
         plt.plot(s.P, label = 'length queue FCFS S%d' % (i + 1))
 
 # > Totals RR
+print('=== Totals RR ===')
+
 for i in range(S):
     s = RRS[i]
     printResults('RR s%s' % (i + 1), s)
@@ -405,6 +431,8 @@ for i in range(S):
         plt.plot(s.P, label = 'length queue RR S%d' % (i + 1))
 
 # > Totals CGC
+print('=== Totals CGC ===')
+
 for i in range(S):
     s = CGCS[i]
     printResults('CGC s%s' % (i + 1), s)
