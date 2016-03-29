@@ -101,28 +101,28 @@ for config in configs:
         for i in range(I):
             Qi = Q[i]
 
-            # Add arrivals
-            for j in range(int(A[i])):
-                Qi.append(0)
 
             # No departures
             if R[i] == 0.0:
                 counts.append(0)
                 continue
-
-            # Pick R[i] amount of jobs from beginning of queue
-            if len(Qi) > R[i]:
-                r = int(R[i])
-                d = Qi[:r]
-                Q[i] = Qi[r:]
-
-            # Depart all
             else:
-                d = Qi[:]
-                Q[i] = []
+                # Pick R[i] amount of jobs from beginning of queue
+                if len(Qi) > R[i]:
+                    r = int(R[i])
+                    d = Qi[:r]
+                    Q[i] = Qi[r:]
 
-            D[i] += d
-            counts.append(len(d))
+                # Depart all
+                else:
+                    d = Qi[:]
+                    Q[i] = []
+
+                D[i] += d
+                counts.append(len(d))
+
+            # Add arrivals
+            Q[i] += [0] * int(A[i])
 
         return counts
 

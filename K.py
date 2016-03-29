@@ -6,8 +6,8 @@ np.random.seed(3)       # Random number generator
 
 # Configuration
 I = 3                   # Number of Queues
-AI = [1, 8, 16]         # Average arrivals
-N = 20                  # Number of Periods
+AI = [8, 8, 16]         # Average arrivals
+N = 153                # Number of Periods
 S = 1                   # Number of servers
 plotServer = 2          # Which server plot
 
@@ -15,7 +15,7 @@ plotServer = 2          # Which server plot
 N = N + 1
 plotServer = min(plotServer,S)
 ra = sum(AI)
-print(ra)
+#print(ra)
 
 
 class Server:
@@ -24,8 +24,7 @@ class Server:
         self.c = c
         self.Q = [[] for q in range(I)]
         self.OR = None # Original R
-        self.R = np.empty(I)
-        self.R.fill(0)
+        self.R = [0] * I
         self.D = [[] for q in range(I)]
         self.LR = None # Last R
         self.LD = None # Last departures
@@ -41,13 +40,13 @@ print('Capacity', c)
 print('')
 
 te = 1 / c
-print(te)
+#print(te)
 
 for i in range(S):
     FFS .append(Server(c))
     RRS .append(Server(c))
     CGCS.append(Server(c))
-    c -= 1                  # Determine capacity of subsequent servers
+    c -= 0                  # Determine capacity of subsequent servers
 
 # Increase time in queue per period
 def increaseTIQ (Q):
@@ -68,7 +67,7 @@ def sumQ (Q):
 
 # Round with rest
 def roundRest (value):
-    rounded = math.floor(value)
+    rounded = round(value)
     return rounded, value - rounded
 
 # Count departures
@@ -106,27 +105,6 @@ def determineNumberOfJobsInQ (Q, R, D):
 
     return counts
 
-# Correct R
-def correctR (s, A):
-    # Properly assign remainder based on arrivals
-    for i in range (0, I - 1):
-        delta = s.R[i] - (len(s.Q[i]) + A[i])
-
-        if delta < 1:
-            continue
-
-        s.R[i] -= delta
-
-        # Respread overcapacity
-        j = 0
-        while delta > 0:
-            # Don't assign to own or previous queues
-            if j > i:
-                s.R[j] += 1
-                delta -= 1
-
-            j = (j + 1) % I # Next queue
-
 # Add arrivals
 def addArrivals (s, A):
     for i in range (I):
@@ -134,7 +112,7 @@ def addArrivals (s, A):
 
 # Average departures
 def averageD (D):
-    avg = np.empty(I)
+    avg = [0] * I
 
     for i in range(I):
         avg[i] = float(sum(D[i])) / len(D[i])
@@ -168,16 +146,13 @@ def CV (D):
 # Queueing Disciplines
 # > First Come, First Served
 def FCFS (s, A, n):
-    Q = s.Q
-    R = s.R
-    D = s.D
-    s.LR = list(R)
+    s.LR = list(s.R)
 
     # Determine results
-    R = [0.0 for r in R]
+    s.R = [0.0 for r in s.R]
     c = s.c
     offset = 0
-    indexes = [0 for r in R]
+    indexes = [0 for r in s.R]
 
     while c > 0:
         # First rule: handle longest waiting job
@@ -185,25 +160,24 @@ def FCFS (s, A, n):
         queues = []
         for i in range(I):
             i = (i + offset) % I       # Round-Robin cycle
-            Qi = Q[i]
             index = indexes[i]
 
             # Queue is fully handled
-            if index >= len(Qi):
+            if index >= len(s.Q[i]):
                 continue
 
             # Multiple longest waiting jobs
-            if Qi[index] == high:
+            if s.Q[i][index] == high:
                 queues.append(i)
                 indexes[i] += 1
 
             # New longest waiting job
-            elif Qi[index] > high:
+            elif s.Q[i][index] > high:
                 # Other job found, reset indexes
                 for _, j in enumerate(queues):
                     indexes[j] -= 1
 
-                high = Qi[index]
+                high = s.Q[i][index]
                 queues = [i]
                 indexes[i] += 1
 
@@ -216,42 +190,39 @@ def FCFS (s, A, n):
                 if j != q:
                     indexes[j] -= 1
 
-            R[q] += 1
+            s.R[q] += 1
 
         # Handle longest waiting job only
         elif len(queues) == 1:
-            R[queues[0]] += 1
+            s.R[queues[0]] += 1
 
         # No more jobs
         else:
             #R[0] += 1
             #R[int(c % I)] += 1
-            R[I - 1] += 1
+            s.R[I - 1] += 1
 
         c -= 1
         offset += 1                    # RR
 
-    increaseTIQ(Q)
-    s.LD = determineNumberOfJobsInQ(Q, R, D)
+    increaseTIQ(s.Q)
+    s.LD = determineNumberOfJobsInQ(s.Q, s.R, s.D)
 
     #s.Q = Q
-    s.OR = R
+    s.OR = s.R
     #s.R = R
     #s.D = D
-    s.P.append(sumQ(Q))                # Total length queue
+    s.P.append(sumQ(s.Q))                # Total length queue
 
     addArrivals(s, A)
-    #correctR(s, A)
 
 # > Round Robin
 def RR (s, A, n):
-    Q = s.Q
-    R = s.R
-    D = s.D
-    s.LR = list(R)
+    s.LR = list(s.R)
 
     # Start with equal split
-    R = [s.c / I for r in R]
+    s.R = [s.c / I for r in s.R]
+    #print('L', s.R)
 
     # Divide overcapacity onto other queues
     r = 0.0
@@ -259,8 +230,8 @@ def RR (s, A, n):
         ri = r / (I - i)               # Queue remainder
         r -= ri                        # Use queue remainder
 
-        lenQi = len(Q[i])
-        value = R[i] + ri
+        lenQi = len(s.Q[i])
+        value = s.R[i] + ri
         limit = lenQi                  # Upper bound
         delta = value - limit
 
@@ -270,24 +241,39 @@ def RR (s, A, n):
 
         value, rest = roundRest(value)
         r += rest
-        R[i] = value
-
+        s.R[i] = value
+        
+    #print('z', s.R, sum(s.R))
     #R[0] += int(r)
     #for j in range(int(r)):
     #    R[j % I] += 1
-    R[I - 1] += int(r)
+    
+    LQ = lenQ(s.Q)
+    #print('LQ', LQ)
+    high = max(LQ)  
+    for i in range(I):
+        if LQ[i] == high:            
+            s.R[i] += int(r)
 
-    increaseTIQ(Q)
-    s.LD = determineNumberOfJobsInQ(Q, R, D)
+
+
+    #s.R[I - 2] += int(r)
+    #print('x', s.R)        
+    #print(LQ)
+    #print(high)
+    #s.R[I - 1] += int(r)
+    
+    
+    increaseTIQ(s.Q)
+    s.LD = determineNumberOfJobsInQ(s.Q, s.R, s.D)
 
     #s.Q = Q
-    s.OR = R
+    s.OR = s.R
     #s.R = R
     #s.D = D
-    s.P.append(sumQ(Q))                  # Total length queue
+    s.P.append(sumQ(s.Q))                  # Total length queue
 
     addArrivals(s, A)
-    #correctR(s, A)
 
 # > Contested Garment Consistent
 
@@ -309,20 +295,21 @@ def CGC (s, A, n):
     c = s.c
     R = [c / I for r in R]
     x = 0.0
-
+    
     # First rule
     if not exceedsServerCapacity(c, Q):
         rule = 1
         r = 0.0                        # Remainder
         for i in range(I):
             ri = r / (I - i)           # Queue remainder
+            ri = r
             r -= ri                    # Use queue remainder
 
             lenQi = len(Q[i])
             value = R[i] + ri
             limit = lenQi / 2          # Upper bound
             delta = value - limit
-
+        
             if delta > 0:
                 r += delta
                 value = limit
@@ -330,7 +317,6 @@ def CGC (s, A, n):
             value, rest = roundRest(value)
             x += rest
             R[i] = value
-
     # Second rule
     else:
         rule = 2
@@ -345,7 +331,7 @@ def CGC (s, A, n):
             value = loss + ri
             limit = lenQi / 2          # Lower bound
             delta = value - limit
-
+            print('r', R)
             if delta > 0:
                 r += delta
                 value = limit
@@ -359,8 +345,11 @@ def CGC (s, A, n):
     #R[0] += round(x)
     #for j in range(int(round(x))):
     #    R[j % I] += 1
+    print('w', R)
     R[I - 1] += round(x)
-
+    print('e', R)
+    print('Rule', rule)
+    
     increaseTIQ(Q)
     s.LD = determineNumberOfJobsInQ(Q, R, D)
 
@@ -372,7 +361,7 @@ def CGC (s, A, n):
     s.rule = rule
 
     addArrivals(s, A)
-    #correctR(s, A)
+
 
 # Test
 def printServer (label, s, A):
@@ -380,7 +369,16 @@ def printServer (label, s, A):
     for i in range(I):
         OQ.append(len(s.Q[i]) - A[i])
 
-    print('%s A, Q, R, Q + A, Rc, LD' % label, A, OQ, s.OR, lenQ(s.Q), s.R, s.LD)
+    print('Server %s'%label)
+    print('Q', s.Q)
+    print('R', s.OR, sum(s.OR))
+    print('D', s.LD, sum(s.LD))
+    print('A', A, sum(A))
+    print('Q+A', lenQ(s.Q))
+    #print('P', s.P)
+    
+    print('')
+   
 """
     print('Period', n)
     print('Server %s' % label)
@@ -398,7 +396,7 @@ for n in range(N):
     print('=== Period %d ===' % (n + 1))
 
     # Determine arrivals
-    A = np.empty(I)
+    A = [0] * I
     for i in range(I):
         A[i] = np.random.poisson(AI[i])
 
@@ -409,7 +407,7 @@ for n in range(N):
     # Servers
     for s in range(S):
         FCFS(FFS[s], Af, n)
-        printServer('FCFS %d' % (s + 1), FFS[s], Af)
+        #printServer('FCFS %d' % (s + 1), FFS[s], Af)
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
