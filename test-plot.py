@@ -6,7 +6,7 @@ np.random.seed(3)       # Random number generator
 
 # Configuration
 I = 3                   # Number of Queues
-AI = [8, 8, 16]         # Average arrivals
+AI = [1, 8, 16]         # Average arrivals
 N = 5000                # Number of Periods
 S = 1                   # Number of servers
 plotServer = 1          # Which server plot
@@ -33,7 +33,7 @@ class Server:
 FFS = []
 RRS = []
 CGCS = []
-c = np.ceil(ra * 1.01)  # Determine capacity of servers
+c = np.ceil(ra + 1)  # Determine capacity of servers
 
 print('Capacity', c)
 print('')
@@ -45,7 +45,7 @@ for i in range(S):
     FFS .append(Server(c))
     RRS .append(Server(c))
     CGCS.append(Server(c))
-    c -= 0                  # Determine capacity of subsequent servers
+    c -= 1                  # Determine capacity of subsequent servers
 
 # Increase time in queue per period
 def increaseTIQ (Q):

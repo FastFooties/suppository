@@ -43,7 +43,7 @@ for config in configs:
     FFS = []
     RRS = []
     CGCS = []
-    c = np.ceil(ra * 1.01)  # Determine capacity of servers
+    c = np.ceil(ra + 1)  # Determine capacity of servers
 
     #print('Capacity', c)
     #print('')
@@ -55,7 +55,7 @@ for config in configs:
         FFS .append(Server(c))
         RRS .append(Server(c))
         CGCS.append(Server(c))
-        c -= 0                  # Determine capacity of subsequent servers
+        c -= 1                  # Determine capacity of subsequent servers
 
     # Increase time in queue per period
     def increaseTIQ (Q):
