@@ -231,13 +231,13 @@ for config in configs:
 
         correctR(s, r)
 
-        increaseTIQ(s.Q)
         s.LD = determineNumberOfJobsInQ(s.Q, s.R, s.D)
 
         s.OR = s.R
-        s.P.append(sumQ(s.Q))              # Total length queue
+        s.P.append(sumQ(s.Q) + sum(A))     # Total length queue
 
         addArrivals(s, A)
+        increaseTIQ(s.Q)
 
     # > Round Robin
     def RR (s, A, n):
@@ -267,13 +267,13 @@ for config in configs:
 
         correctR(s, round(r))
 
-        increaseTIQ(s.Q)
         s.LD = determineNumberOfJobsInQ(s.Q, s.R, s.D)
 
         s.OR = s.R
-        s.P.append(sumQ(s.Q))              # Total length queue
+        s.P.append(sumQ(s.Q) + sum(A))     # Total length queue
 
         addArrivals(s, A)
+        increaseTIQ(s.Q)
 
     # > Contested Garment Consistent
 
@@ -344,14 +344,14 @@ for config in configs:
 
         correctR(s, round(x))
 
-        increaseTIQ(s.Q)
         s.LD = determineNumberOfJobsInQ(s.Q, s.R, s.D)
 
         s.OR = s.R
-        s.P.append(sumQ(s.Q))                 # Total length queue
+        s.P.append(sumQ(s.Q) + sum(A))     # Total length queue
         s.rule = rule
 
         addArrivals(s, A)
+        increaseTIQ(s.Q)
 
     # Test
     def printServer (label, s, A):
@@ -395,7 +395,7 @@ for config in configs:
     def printResults (label, s):
         global config
         WIP = float(sum(s.P)) / N
-        output = '%d;%d;%s;%d;' % (config[0], config[1], label, WIP)
+        output = '%d;%d;%s;%f;' % (config[0], config[1], label, WIP)
         output += ';'.join(map(str, averageD(s.D)))
         output += ';'
         output += ';'.join(map(str, CV(s.D)))
