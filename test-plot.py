@@ -11,26 +11,55 @@ np.random.seed(3)       # Random number generator
 # Configuration
 I = 3                   # Number of Queues
 AI = [1, 8, 16]         # Average arrivals
-N = 5000                # Number of Periods
+c = np.ceil(sum(AI) + 1)# Determine capacity of servers
+N = 1                # Number of Periods
 S = 1                   # Number of servers
 plotServer = 1          # Which server plot
 
+
+# Tests
+##""" p for Poisson distribution"""
+##
+##"""Arrivals move to queue"""
+##AI = [5, 5, 5]
+Distribution = ""
+##c = 0
+
+##"""No arrivals"""
+##AI = [0, 0, 0]
+####c = 15
+
+    
 # Servers
 N = N + 1
 plotServer = min(plotServer,S)
-ra = sum(AI)
-print(ra)
 
 FFS = []
 RRS = []
 CGCS = []
-c = np.ceil(ra + 1)  # Determine capacity of servers
 
-print('Capacity', c)
+print('=== System Configuration ===')
+print('Run Length:', N - 1)
+print('Number of Queues:', I)
+print('Capacity:', c)
+print('Arrivals:', AI)
+
+
+ra = sum(AI)            # Arrival rate
+print('Arrival Rate:', ra)
+
+if c == 0:
+    print("")
+else:
+    te = 1 / c
+    print("Effective Process Time:", te)
+
+if ra or te == 0:
+    u = 0
+else:
+    u = ra * te
+print('Utilization: {0:.2%}'.format(u) )
 print('')
-
-te = 1 / c
-print(te)
 
 for i in range(S):
     FFS .append(Server(c, I))
@@ -44,8 +73,12 @@ for n in range(N):
 
     # Determine arrivals
     A = [0] * I
-    for i in range(I):
-        A[i] = np.random.poisson(AI[i])
+    if Distribution == 'p' or Distribution == "":
+        for i in range(I):
+            A[i] = np.random.poisson(AI[i])
+    else:
+        for i in range(I):
+            A[i] = AI[i]
 
     Af = list(A)
     Ar = list(A)
@@ -70,13 +103,17 @@ def printResults (label, s):
     print('Server %d' % (i + 1))
     WIP = float(sum(s.P)) / N
     TH = lib.countD(s) / N
-    CT = WIP / TH
-    print('WIP', WIP)
-    print('TH', TH)
-    print('CT', CT)
-    print('Davg', lib.averageD(s))
-    print('stdDev', lib.stdDev(s))
-    print('CV', lib.CV(s))
+    if TH == 0:
+        CT = "No Value"
+        TH = "No Value"
+    else:
+        CT = WIP / TH
+    print('WIP:', WIP)
+    print('TH:', TH)
+    print('CT:', CT)
+    print('Davg:', lib.averageD(s))
+    print('stdDev:', lib.stdDev(s))
+    print('CV:', lib.CV(s))
     print('')
 
 # > Totals FCFS
@@ -97,7 +134,7 @@ for i in range(S):
     if i + 1 == plotServer:
         plt.plot(s.P, label = 'length queue RR S%d' % (i + 1))
 
-# > Totals CGC
+# >Totals CGC
 print('=== Totals CGC ===')
 
 for i in range(S):
