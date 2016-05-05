@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pylab as plt
-import src.lib as lib
+import src.helpers as lib
 from src.server import Server
 from src.fcfs import FCFS
 from src.rr import RR

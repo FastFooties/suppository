@@ -1,5 +1,5 @@
 # Contested Garment Consistent
-import lib
+import src.helpers as lib
 
 # Half the sum of the claims (determine y)
 def halfTheSumOfTheClaims (I, Q):

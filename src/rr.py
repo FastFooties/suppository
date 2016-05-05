@@ -1,5 +1,5 @@
 # Round Robin
-import lib
+import src.helpers as lib
 
 def RR (s, A, n):
     s.LR = list(s.R)

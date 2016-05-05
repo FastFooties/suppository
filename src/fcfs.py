@@ -1,5 +1,5 @@
 # First Come, First Served
-import lib
+import src.helpers as lib
 
 def FCFS (s, A, n):
     s.LR = list(s.R)
