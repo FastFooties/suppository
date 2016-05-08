@@ -110,13 +110,13 @@ def CV (s):
     return cv
 
 # Print server info
-def printServer (label, s, A):
+def printServer (label, n, s, A):
     print('Period', n)
     print('Server %s' % label)
     print('A', A)
     #print('Sum Arrivals', sum(A))
-    print('Q', s.Q)
-    print('D', s.D)
-    print('P', s.P)
-    print('R', s.R)
+    #print('Q', s.Q)
+    #print('D', s.D)
+    #print('P', s.P)
+    #print('R', s.R)
     print('')

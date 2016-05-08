@@ -54,15 +54,15 @@ for n in range(N):
     # Servers
     for s in range(S):
         FCFS(FFS[s], Af, n)
-        #lib.printServer('FCFS %d' % (s + 1), FFS[s], Af)
+        #lib.printServer('FCFS %d' % (s + 1), n, FFS[s], Af)
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
-        #lib.printServer('RRS %d' % (s + 1), RRS[s], Ar)
+        #lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
         Ar = RRS[s].LD
 
         CGC(CGCS[s], Ac, n)
-        #lib.printServer('CGCS %d' % (s + 1), CGCS[s], Ac)
+        #lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
         Ac = CGCS[s].LD
 
 # Totals
@@ -78,7 +78,6 @@ def printResults (label, s):
     print('stdDev', lib.stdDev(s))
     print('CV', lib.CV(s))
     print('')
-
 
 # > Totals FCFS
 print('=== Totals FCFS ===')
