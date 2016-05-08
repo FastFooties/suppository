@@ -5,7 +5,7 @@ def RR (s, A, n):
     s.LR = list(s.R)
 
     # Start with equal split
-    s.R = [s.c / s.I for r in s.R]
+    s.R = [float(s.c) / s.I for r in s.R]
 
     # Divide overcapacity onto other queues
     r = 0.0

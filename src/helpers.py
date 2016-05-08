@@ -1,4 +1,5 @@
 import math
+import operator
 
 # Increase time in queue per period
 def increaseTIQ (s):
@@ -31,17 +32,9 @@ def countD (s):
 
 # Correct R
 def correctR (s, r):
-    while r > 0:
-        assigned = False
-        for i in range(s.I):
-            if len(s.Q[i]) > s.R[i]:
-                s.R[i] += 1
-                assigned = True
-                break
-
-        if not assigned:
-            s.R[s.I - 1] += 1
-        r -= 1
+	# Add remainder to biggest queue
+	key, _ = max(enumerate(lenQ(s.I, s.Q)), key=operator.itemgetter(1))
+	s.R[key] += r
 
 # Determine number of jobs in queue
 def determineNumberOfJobsInQ (s):

@@ -14,7 +14,7 @@ def CGC (s, A, n):
 
     # Start with equal split
     c = s.c
-    s.R = [c / s.I] * s.I
+    s.R = [float(c) / s.I] * s.I
     x = 0.0
 
     # First rule
@@ -43,7 +43,7 @@ def CGC (s, A, n):
     # Second rule
     else:
         rule = 2
-        loss = (lib.sumQ(s.I, s.Q) - c) / s.I # Distributed loss
+        loss = (float(lib.sumQ(s.I, s.Q)) - c) / s.I # Distributed loss
         r = 0.0                        # Remainder
         for i in range(s.I):
             ri = r / (s.I - i)         # Queue remainder
