@@ -11,28 +11,55 @@ np.random.seed(3)       # Random number generator
 # Configuration
 I = 3                   # Number of Queues
 AI = [1, 8, 16]         # Average arrivals
+Distribution = "p"      # Poisson Distributed arrivals
 c = np.ceil(sum(AI) + 1)# Determine capacity of servers
-N = 1                # Number of Periods
+N = 1000                # Number of Periods
 S = 1                   # Number of servers
 plotServer = 1          # Which server plot
 
 
 # Tests
-##""" p for Poisson distribution"""
+##""" """
 ##
-##"""Arrivals move to queue"""
+##"""Arrivals move to queue and zero capacity"""
 ##AI = [5, 5, 5]
-Distribution = ""
 ##c = 0
 
 ##"""No arrivals"""
 ##AI = [0, 0, 0]
-####c = 15
+##c = 15
 
-    
+##"""Emptying the system"""
+##c = 5
+##N = 7
+##for n in range(N):
+##    print(n, AI)
+##    if n < 1:
+##        AI = [10, 10, 10]
+##    else:
+##        AI = [0, 0, 0]
+
+##"""One queue"""
+##I = 1
+
+##"""Change arrival balance"""
+##AI = [15, 10, 5]
+##AI.sort()
+##c = (sum(AI) + 1)
+
+##"""Large overcapacity"""
+##c = 1000
+
+##"""100% utilization"""
+##c = sum(AI)
+
+
+
 # Servers
 N = N + 1
 plotServer = min(plotServer,S)
+
+AI.sort()   #Sort arrivals
 
 FFS = []
 RRS = []
@@ -54,7 +81,7 @@ else:
     te = 1 / c
     print("Effective Process Time:", te)
 
-if ra or te == 0:
+if ra == 0 or te == 0:
     u = 0
 else:
     u = ra * te
@@ -73,7 +100,7 @@ for n in range(N):
 
     # Determine arrivals
     A = [0] * I
-    if Distribution == 'p' or Distribution == "":
+    if Distribution == 'p':
         for i in range(I):
             A[i] = np.random.poisson(AI[i])
     else:
@@ -108,9 +135,28 @@ def printResults (label, s):
         TH = "No Value"
     else:
         CT = WIP / TH
+    CTq = 0.5 * u/(1-u) * te
+    if te <= 0 or ra <= 0:
+        ""
+    else:
+        print('Upper Limit WIP:', (WIP/ra)/te)
     print('WIP:', WIP)
+    if te <= 0 or ra <= 0:
+        ""
+    else:
+        print('Lower Limit WIP:', ((WIP/ra)-1)/te)
     print('TH:', TH)
     print('CT:', CT)
+    if ra <= 0:
+        ""
+    else:
+        print('Upper Limit CTq:', (WIP/ra))
+    print('CTq:', CTq)
+    if ra <= 0:
+        ""
+    else:
+        print('Upper Limit CTq:', (WIP/ra)-1)
+    print('CT', CTq + te)
     print('Davg:', lib.averageD(s))
     print('stdDev:', lib.stdDev(s))
     print('CV:', lib.CV(s))
