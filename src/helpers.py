@@ -72,12 +72,9 @@ def addArrivals (s, A):
 # Average departures
 def averageD (s):
     avg = [0] * s.I
-    
+
     for i in range(s.I):
-        if len(s.D[i]) == 0:
-            avg[i] = 0
-        else:    
-            avg[i] = float(sum(s.D[i])) / len(s.D[i])
+        avg[i] = float(sum(s.D[i])) / len(s.D[i])
 
     return avg
 
@@ -90,10 +87,8 @@ def stdDev (s):
 
         for d in s.D[i]:
             total += (d - avg[i]) ** 2
-        if len(s.D[i]) == 0:
-            V.append(0)
-        else:
-            V.append((total / len(s.D[i])) ** (0.5))
+
+        V.append((total / len(s.D[i])) ** (0.5))
 
     return V
 
