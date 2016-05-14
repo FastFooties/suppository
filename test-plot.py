@@ -13,7 +13,7 @@ I = 3                   # Number of Queues
 AI = [1, 8, 16]         # Average arrivals
 Distribution = "p"      # Poisson Distributed arrivals
 c = np.ceil(sum(AI) + 1)# Determine capacity of servers
-N = 1000                # Number of Periods
+N = 11                # Number of Periods
 S = 1                   # Number of servers
 plotServer = 1          # Which server plot
 
@@ -32,12 +32,7 @@ plotServer = 1          # Which server plot
 ##"""Emptying the system"""
 ##c = 5
 ##N = 7
-##for n in range(N):
-##    print(n, AI)
-##    if n < 1:
-##        AI = [10, 10, 10]
-##    else:
-##        AI = [0, 0, 0]
+##Q = [[0] * 10, [0] * 10, [0] * 10]
 
 ##"""One queue"""
 ##I = 1
@@ -52,6 +47,20 @@ plotServer = 1          # Which server plot
 
 ##"""100% utilization"""
 ##c = sum(AI)
+
+##"""Total queue length equal over all periods"""
+## ?
+
+##"""Sum of results is equal to capacity"""
+##if (sum(s.R) != c):
+##    print('False')
+
+##"""Division of capacity in CGC"""
+## test-remainder.py
+
+##"""Increase the arrival rate of the largest stream"""
+##AI[1, 8, 100]
+
 
 
 
@@ -118,11 +127,11 @@ for n in range(N):
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
-        #lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
+        lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
         Ar = RRS[s].LD
 
         CGC(CGCS[s], Ac, n)
-        #lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
+        lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
         Ac = CGCS[s].LD
 
 # Totals
