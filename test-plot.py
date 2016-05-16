@@ -171,6 +171,22 @@ def printResults (label, s):
     print('CV:', lib.CV(s))
     print('')
 
+# > Check queue lenghts
+diff = False
+
+for n in range(N):
+    for i in range(S):
+        a = FFS[i].P[n]
+        b = RRS[i].P[n]
+        c = CGCS[i].P[n]
+        if a != b or a != c:
+            print('Difference in P:', n, i, a, b, c)
+            diff = True
+
+if not diff:
+    print('No differences in P.')
+    print('')
+
 # > Totals FCFS
 print('=== Totals FCFS ===')
 
