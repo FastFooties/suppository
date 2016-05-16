@@ -19,7 +19,7 @@ RR(s, A, 0)
 print('RR', c, s.R, e, s.R == e, s.rule)
 
 Q = [[0] * 2, [0] * 11, [0] * 14]
-e = [1, 10, 15]
+e = [2, 10, 14]
 s = Server(c, I)
 s.Q = list(Q)
 CGC(s, A, 0)

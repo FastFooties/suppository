@@ -32,9 +32,12 @@ def countD (s):
 
 # Correct R
 def correctR (s, r):
-	# Add remainder to biggest queue
-	key, _ = max(enumerate(lenQ(s.I, s.Q)), key=operator.itemgetter(1))
-	s.R[key] += r
+    # Spread remainder over queues with biggest difference to R value
+    while r > 0:
+        diff = [i - j for i, j in zip(lenQ(s.I, s.Q), s.R)]
+        i, _ = max(enumerate(diff), key=operator.itemgetter(1))
+        s.R[i] += 1
+        r -= 1
 
 # Determine number of jobs in queue
 def determineNumberOfJobsInQ (s):
@@ -72,11 +75,11 @@ def addArrivals (s, A):
 # Average departures
 def averageD (s):
     avg = [0] * s.I
-    
+
     for i in range(s.I):
         if len(s.D[i]) == 0:
             avg[i] = 0
-        else:    
+        else:
             avg[i] = float(sum(s.D[i])) / len(s.D[i])
 
     return avg
@@ -113,8 +116,8 @@ def printServer (label, n, s, A):
     print('Server %s' % label)
     print('A', A)
     #print('Sum Arrivals', sum(A))
-    #print('Q', s.Q)
+    print('new Q', lenQ(s.I, s.Q))
     #print('D', s.D)
     #print('P', s.P)
-    #print('R', s.R)
+    print('R', s.R)
     print('')
