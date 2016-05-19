@@ -98,7 +98,7 @@ def printResults (label, s):
         TH = "No Value"
     else:
         CT = WIP / TH
-    print('u', u, 'te', te, 'ra', ra, CT, TH, WIP)
+    
     CTq = 0.5 * u/(1-u) * te
     if te <= 0 or ra <= 0:
         ""
@@ -120,8 +120,8 @@ def printResults (label, s):
         ""
     else:
         print('Lower Limit CTq:', (WIP/ra)-1)
-    print('CT', CTq + te, CTq, te)
-    print('Davg:', lib.averageD(s))
+    print('CT', CTq + te + 1)
+    print('CTq per queue:', lib.averageD(s))
     print('stdDev:', lib.stdDev(s))
     print('CV:', lib.CV(s))
     print('')
