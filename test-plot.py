@@ -13,56 +13,9 @@ I = 3                   # Number of Queues
 AI = [1, 8, 16]         # Average arrivals
 Distribution = "p"      # Poisson Distributed arrivals
 c = np.ceil(sum(AI) + 1)# Determine capacity of servers
-N = 11                # Number of Periods
+N = 5000                # Number of Periods
 S = 1                   # Number of servers
 plotServer = 1          # Which server plot
-
-
-# Tests
-##""" """
-##
-##"""Arrivals move to queue and zero capacity"""
-##AI = [5, 5, 5]
-##c = 0
-
-##"""No arrivals"""
-##AI = [0, 0, 0]
-##c = 15
-
-##"""Emptying the system"""
-##c = 5
-##N = 7
-##Q = [[0] * 10, [0] * 10, [0] * 10]
-
-##"""One queue"""
-##I = 1
-
-##"""Change arrival balance"""
-##AI = [15, 10, 5]
-##AI.sort()
-##c = (sum(AI) + 1)
-
-##"""Large overcapacity"""
-##c = 1000
-
-##"""100% utilization"""
-##c = sum(AI)
-
-##"""Total queue length equal over all periods"""
-## ?
-
-##"""Sum of results is equal to capacity"""
-##if (sum(s.R) != c):
-##    print('False')
-
-##"""Division of capacity in CGC"""
-## test-remainder.py
-
-##"""Increase the arrival rate of the largest stream"""
-##AI[1, 8, 100]
-
-
-
 
 # Servers
 N = N + 1
@@ -127,11 +80,11 @@ for n in range(N):
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
-        lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
+        #lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
         Ar = RRS[s].LD
 
         CGC(CGCS[s], Ac, n)
-        lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
+        #lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
         Ac = CGCS[s].LD
 
 # Totals
@@ -164,27 +117,11 @@ def printResults (label, s):
     if ra <= 0:
         ""
     else:
-        print('Upper Limit CTq:', (WIP/ra)-1)
-    print('CT', CTq + te)
+        print('Lower Limit CTq:', (WIP/ra)-1)
+    print('CT', CTq + te + 1)
     print('Davg:', lib.averageD(s))
     print('stdDev:', lib.stdDev(s))
     print('CV:', lib.CV(s))
-    print('')
-
-# > Check queue lenghts
-diff = False
-
-for n in range(N):
-    for i in range(S):
-        a = FFS[i].P[n]
-        b = RRS[i].P[n]
-        c = CGCS[i].P[n]
-        if a != b or a != c:
-            print('Difference in P:', n, i, a, b, c)
-            diff = True
-
-if not diff:
-    print('No differences in P.')
     print('')
 
 # > Totals FCFS
@@ -213,6 +150,22 @@ for i in range(S):
     printResults('CGC s%s' % (i + 1), s)
     if i + 1 == plotServer:
         plt.plot(s.P, label = 'length queue CGC S%d' % (i + 1))
+        
+"""Total queue length equal over all periods"""
+diff = False
+
+for n in range(N):
+    for i in range(S):
+        a = FFS[i].P[n]
+        b = RRS[i].P[n]
+        c = CGCS[i].P[n]
+        if a != b or a != c:
+            print('Difference in Total Queue Length', n, i, a, b, c)
+            diff = True
+
+if not diff:
+    print('No differences in Total Queue Length')
+    print('')
 
 # Show plot
 plt.legend()
