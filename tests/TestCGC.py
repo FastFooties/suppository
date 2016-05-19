@@ -4,6 +4,7 @@ import src.helpers as lib
 from src.server import Server
 from src.cgc import CGC
 
+"""Test the working of CGC"""
 A = [0, 0, 0]
 Q = [[0] * 100, [0] * 200, [0] * 300]
 C = range(0, 600 + 1, 50) # inclusive
