@@ -10,10 +10,10 @@ np.random.seed(3)       # Random number generator
 
 # Configuration
 I = 3                   # Number of Queues
-AI = [1, 8, 16]         # Average arrivals
+AI = [1, 7, 16]         # Average arrivals
 Distribution = "p"      # Poisson Distributed arrivals
 c = np.ceil(sum(AI) + 1)# Determine capacity of servers
-N = 5000                # Number of Periods
+N = 50                # Number of Periods
 S = 1                   # Number of servers
 plotServer = 1          # Which server plot
 
@@ -83,7 +83,7 @@ for n in range(N):
         #lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
         Ar = RRS[s].LD
 
-        CGC(CGCS[s], Ac, n)
+        CGC(CGCS[s], Ac, n)        
         #lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
         Ac = CGCS[s].LD
 
@@ -97,29 +97,32 @@ def printResults (label, s):
         TH = "No Value"
     else:
         CT = WIP / TH
-    CTq = 0.5 * u/(1-u) * te
     if te <= 0 or ra <= 0:
         ""
     else:
         print('Upper Limit WIP:', (WIP/ra)/te)
     print('WIP:', WIP)
     if te <= 0 or ra <= 0:
-        ""
+        ""  
     else:
         print('Lower Limit WIP:', ((WIP/ra)-1)/te)
+    print('Upper Limit TH:', c+1)
     print('TH:', TH)
+    print('Lower Limit TH:', 0)
+    if ra <= 0:
+        ""
+    else:
+        print('Upper Limit CT:', (WIP/ra))
     print('CT:', CT)
     if ra <= 0:
         ""
     else:
-        print('Upper Limit CTq:', (WIP/ra))
-    print('CTq:', CTq)
-    if ra <= 0:
-        ""
-    else:
-        print('Lower Limit CTq:', (WIP/ra)-1)
-    print('CT', CTq + te + 1)
-    print('Davg:', lib.averageD(s))
+        print('Lower Limit CT:', WIP/ra-1)
+    print('CTq:', CT - te - 1)
+    CTq = 0.5 * u/(1-u) * te
+    print('Expected CT:', CTq + te + 1)
+    print('Expected CTq:', CTq)
+    print('CTq per queue:', lib.averageD(s))
     print('stdDev:', lib.stdDev(s))
     print('CV:', lib.CV(s))
     print('')
