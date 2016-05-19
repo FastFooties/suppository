@@ -7,13 +7,22 @@ from src.fcfs import FCFS
 from src.rr import RR
 from src.cgc import CGC
 
-"""Emptying the system"""
+"""Large over capacity"""
 Distribution = 'p'
-Q = [[0] * 10, [0] * 10, [0] * 10]
+Q = [[0] * 0, [0] * 0, [0] * 0]
 N = 7
-A = [0, 0, 0]
+AI = [1, 8, 16]
 I = 3
-C = 5
+C = 1000
+
+# Determine arrivals
+A = [0] * I
+if Distribution == 'p':
+    for i in range(I):
+        A[i] = np.random.poisson(AI[i])
+else:
+    for i in range(I):
+        A[i] = AI[i]
 
 fcfs = Server(C, I)
 fcfs.Q = list(Q)
