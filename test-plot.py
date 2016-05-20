@@ -10,16 +10,17 @@ np.random.seed(3)       # Random number generator
 
 # Configuration
 I = 3                   # Number of Queues
-AI = [1, 7, 16]         # Average arrivals
+AI = [3, 7, 16]         # Average arrivals
 Distribution = "p"      # Poisson Distributed arrivals
 c = np.ceil(sum(AI) + 1)# Determine capacity of servers
-N = 50                # Number of Periods
+N = 100000               # Number of Periods
 S = 1                   # Number of servers
 plotServer = 1          # Which server plot
 
 # Servers
 N = N + 1
 plotServer = min(plotServer,S)
+THmax = c
 
 AI.sort()   #Sort arrivals
 
@@ -90,8 +91,8 @@ for n in range(N):
 # Totals
 def printResults (label, s):
     print('Server %d' % (i + 1))
-    WIP = float(sum(s.P)) / N
-    TH = lib.countD(s) / N
+    WIP = float(sum(s.P)) / (N)
+    TH = lib.countD(s) / (N)
     if TH == 0:
         CT = "No Value"
         TH = "No Value"
@@ -105,23 +106,26 @@ def printResults (label, s):
     if te <= 0 or ra <= 0:
         ""  
     else:
-        print('Lower Limit WIP:', ((WIP/ra)-1)/te)
-    print('Upper Limit TH:', c+1)
+        print('Lower Limit WIP:', (WIP/ra-1)/te)
+    print('Upper Limit TH:', THmax)
     print('TH:', TH)
     print('Lower Limit TH:', 0)
     if ra <= 0:
         ""
     else:
-        print('Upper Limit CT:', (WIP/ra))
+        print('Upper Limit CT:', WIP/ra)
     print('CT:', CT)
     if ra <= 0:
         ""
     else:
         print('Lower Limit CT:', WIP/ra-1)
-    print('CTq:', CT - te - 1)
-    CTq = 0.5 * u/(1-u) * te
-    print('Expected CT:', CTq + te + 1)
+    CTq = CT - te
+    print('CTq:', CTq)
+    print('Expected ratio CTq/te approx. 10:', (CTq - 1) / te)
+    CTq = 0.5 * u/(1-u) * te + 1
+    print('Expected CT:', CTq + te)
     print('Expected CTq:', CTq)
+    print('Expected WIP:', ra * CTq + 1)
     print('CTq per queue:', lib.averageD(s))
     print('stdDev:', lib.stdDev(s))
     print('CV:', lib.CV(s))
