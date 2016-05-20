@@ -11,18 +11,11 @@ from src.cgc import CGC
 Distribution = 'p'
 Q = [[0] * 0, [0] * 0, [0] * 0]
 N = 7
-AI = [1, 8, 16]
+AI = [1, 3, 5]
 I = 3
 C = 1000
 
-# Determine arrivals
-A = [0] * I
-if Distribution == 'p':
-    for i in range(I):
-        A[i] = np.random.poisson(AI[i])
-else:
-    for i in range(I):
-        A[i] = AI[i]
+
 
 fcfs = Server(C, I)
 fcfs.Q = list(Q)
@@ -32,11 +25,22 @@ cgc = Server(C, I)
 cgc.Q = list(Q)
 
 for n in range(N):
+    # Determine arrivals
+    A = [0] * I
+    if Distribution == 'p':
+        for i in range(I):
+            A[i] = np.random.poisson(AI[i])
+    else:
+        for i in range(I):
+
+            A[i] = AI[i]
+
+    
     FCFS(fcfs, A, n)
-    print('FCFS', 'Period:', n, 'Capacity:', fcfs.c, 'Queue:', fcfs.Q, 'Arrivals:', A, 'Departures', fcfs.D)
+    print('FCFS', 'Period:', n, 'Capacity:', fcfs.c, 'Queue:', fcfs.Q, 'Arrivals:', A)
 
     RR(rr, A, n)
-    print('RR', 'Period:', n, 'Capacity:', rr.c, 'Queue:', rr.Q, 'Arrivals:', A, 'Departures', rr.D)
+    print('RR', 'Period:', n, 'Capacity:', rr.c, 'Queue:', rr.Q, 'Arrivals:', A)
 
     CGC(cgc, A, n)
-    print('CGC', 'Period:', n, 'Capacity:', cgc.c, 'Queue:', cgc.Q, 'Arrivals:', A, 'Departures', cgc.D)
+    print('CGC', 'Period:', n, 'Capacity:', cgc.c, 'Queue:', cgc.Q, 'Arrivals:', A)
