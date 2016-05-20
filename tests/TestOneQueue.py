@@ -8,31 +8,20 @@ from src.rr import RR
 from src.cgc import CGC
 
 """Only one queue"""
-Distribution = "d" 
+Distribution = 'p'
+Q = [[0] * 4, [0] * 0, [0] * 0]
+N = 7
 A = [5, 5, 5]
-Q = [[0] * 0, [0] * 0, [0] * 0]
-c = 0
 I = 1
-s = Server(c,I)
-s.Q = list(Q)
-CGC(s, A, 0)
-print('CGC', 'Capacity:', c, 'Queue:', Q, 'Assigned Capacity', s.R, 'Arrivals:', A, 'Departures', s.D)
+C = 6
 
-A = [5, 5, 5]
-Q = [[0] * 0, [0] * 0, [0] * 0]
-c = 0
-I = 1
-s = Server(c,I)
-s.Q = list(Q)
-RR(s, A, 0)
-print('RR', 'Capacity:', c, 'Queue:', Q, 'Assigned Capacity', s.R, 'Arrivals:', A, 'Departures', s.D)
+fcfs = Server(C, I)
+fcfs.Q = list(Q)
+rr = Server(C, I)
+rr.Q = list(Q)
+cgc = Server(C, I)
+cgc.Q = list(Q)
 
-A = [5, 5, 5]
-Q = [[0] * 0, [0] * 0, [0] * 0]
-c = 0
-I = 1
-s = Server(c,I)
-s.Q = list(Q)
-FCFS(s, A, 0)
-print('FCFS', 'Capacity:', c, 'Queue:', Q, 'Assigned Capacity', s.R, 'Arrivals:', A, 'Departures', s.D)
-
+for n in range(N):
+    FCFS(fcfs, A, n)
+    print('FCFS', 'Period:', n, 'Capacity:', fcfs.c, 'Queue:', fcfs.Q, 'Arrivals:', A)
