@@ -7,20 +7,20 @@ from src.rr import RR
 from src.cgc import CGC
 
 configs = [
-    [3, 1],
-    [5, 3],
-    [7, 5],
-    [9, 8]
+    [1],
+    [3],
+    [5],
+    [7]
 ]
 
-print('seed;fai;queue;WIP;avgD_a;avgD_b;avgD_c;CV_a;CV_b;CB_c')
+print('fai;queue;CTq_a;CTq_b;CTq_c;CV_a;CV_b;CB_c')
 
 for config in configs:
-    np.random.seed(config[0]) # Random number generator
+    np.random.seed(3) # Random number generator
 
     # Configuration
     I = 3                   # Number of Queues
-    AI = [config[1], 8, 16] # Average arrivals
+    AI = [config[0], 7, 16] # Average arrivals
     N = 5000                # Number of Periods
     S = 1                   # Number of servers
     plotServer = 1          # Which server plot
@@ -79,7 +79,7 @@ for config in configs:
     def printResults (label, s):
         global config
         WIP = float(sum(s.P)) / N
-        output = '%d;%d;%s;%f;' % (config[0], config[1], label, WIP)
+        output = '%d;%s;' % (config[0], label)
         output += ';'.join(map(str, lib.averageD(s)))
         output += ';'
         output += ';'.join(map(str, lib.CV(s)))
