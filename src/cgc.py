@@ -68,11 +68,14 @@ def CGC (s, A, n):
 
     lib.correctR(s, round(x))
 
+
+
     s.LD = lib.determineNumberOfJobsInQ(s)
 
     s.OR = s.R
-    s.P.append(lib.sumQ(s.I, s.Q)) # Total length queue
+
     s.rule = rule
 
     lib.addArrivals(s, A)
+    s.P.append(lib.sumQ(s.I, s.Q)) # Total length queue
     lib.increaseTIQ(s)

@@ -28,10 +28,12 @@ def RR (s, A, n):
 
     lib.correctR(s, round(r))
 
+    
     s.LD = lib.determineNumberOfJobsInQ(s)
 
     s.OR = s.R
-    s.P.append(lib.sumQ(s.I, s.Q)) # Total length queue
+
 
     lib.addArrivals(s, A)
+    s.P.append(lib.sumQ(s.I, s.Q)) # Total length queue
     lib.increaseTIQ(s)
