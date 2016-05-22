@@ -71,7 +71,7 @@ def CGC (s, A, n):
     s.LD = lib.determineNumberOfJobsInQ(s)
 
     s.OR = s.R
-    s.P.append(lib.sumQ(s.I, s.Q) + sum(A)) # Total length queue
+    s.P.append(lib.sumQ(s.I, s.Q)) # Total length queue
     s.rule = rule
 
     lib.addArrivals(s, A)
