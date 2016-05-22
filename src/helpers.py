@@ -80,7 +80,7 @@ def averageD (s):
         if len(s.D[i]) == 0:
             avg[i] = 0
         else:
-            avg[i] = float(sum(s.D[i])) / len(s.D[i])
+            avg[i] = float(sum(s.D[i])) / (len(s.D[i]))
 
     return avg
 
@@ -117,7 +117,8 @@ def printServer (label, n, s, A):
     print('A', A)
     #print('Sum Arrivals', sum(A))
     print('new Q', lenQ(s.I, s.Q))
+    print('Q', s.Q)
     #print('D', s.D)
-    #print('P', s.P)
-    print('R', s.R)
+    print('P', s.P)
+    #print('R', s.R)
     print('')
