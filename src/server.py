@@ -9,4 +9,5 @@ class Server:
         self.LR = None # Last R
         self.LD = None # Last departures
         self.P = []
+        self.A = []
         self.rule = None
