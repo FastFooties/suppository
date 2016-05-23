@@ -26,6 +26,16 @@ else:
     for i in range(I):
         A[i] = AI[i]
 
+FCFS = []
+RRS = []
+CGCS = []
+
+for i in range(S):
+    FCFS.append(Server(C, i))
+    RRS .append(Server(C, i))
+    CGCS.append(Server(C, i))
+
+for n in range(N):
     Af = list(A)
     Ar = list(A)
     Ac = list(A)
@@ -33,32 +43,13 @@ else:
     # Servers
     for s in range(S):
         FCFS(FFS[s], Af, n)
-        #lib.printServer('FCFS %d' % (s + 1), n, FFS[s], Af)
+        print('FCFS','Period:', n, 'Server %s' % (s + 1) , 'Last Departures:', FCFS[s].LD)
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
-        #lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
+        print('RR', 'Period:', n, 'Server %s' % (s + 1) , 'Last Departures:', RRS[s].LD)
         Ar = RRS[s].LD
 
         CGC(CGCS[s], Ac, n)
-        #lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
+        print('CGC', 'Period:', n, 'Server %s' % (s + 1), 'Last Departures:', CGCS[s].LD)
         Ac = CGCS[s].LD
-
-fcfs = Server(C, I)
-fcfs.Q = list(Q)
-rr = Server(C, I)
-rr.Q = list(Q)
-cgc = Server(C, I)
-cgc.Q = list(Q)
-
-for n in range(N):
-    for s in range(S):
-        FCFS(fcfs, A, n)
-        print('FCFS','Period:', n, 'Server %s' % (s + 1) , 'Last Departures:', fcfs.LD)
-
-        RR(rr, A, n)
-        print('RR', 'Period:', n, 'Server %s' % (s + 1) , 'Last Departures:', rr.LD)
-
-        CGC(cgc, A, n)
-        print('CGC', 'Period:', n, 'Server %s' % (s + 1), 'Last Departures:', cgc.LD)
-

@@ -116,7 +116,7 @@ def printServer (label, n, s, A):
     #print('Period', n)
     #print('Server %s' % label)
     #print('A', A)
-    if n == 5000:
+    #if n == 5000:
         #print('s.A', s.A)
         #print('P', s.P)
         #print('sum D', countD(s))
