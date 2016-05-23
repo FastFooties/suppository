@@ -13,7 +13,7 @@ I = 3                   # Number of Queues
 AI = [3, 7, 16]         # Average arrivals
 Distribution = "p"      # Poisson Distributed arrivals
 c = np.ceil(sum(AI) + 2)# Determine capacity of servers
-N = 5              # Number of Periods
+N = 100000             # Number of Periods
 S = 1                   # Number of servers
 plotServer = 1          # Which server plot
 
@@ -81,7 +81,7 @@ for n in range(N):
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
-        lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
+        #lib.printServer('RRS %d' % (s + 1), n, RRS[s], Ar)
         Ar = RRS[s].LD
 
         CGC(CGCS[s], Ac, n)        
@@ -91,51 +91,51 @@ for n in range(N):
 # Totals
 def printResults (label, s):
     print('Server %d' % (i + 1))
-    CTq = 0.5 * u/(1-u) * te
     WIP = float(sum(s.P)) / (N)
-    print('sum all queues (s.P)', float(sum(s.P)))
-    print('expected sum all queues', (CTq * N + te) * ra)
-    print('sum all departures (s.D)', lib.countD(s))
-    print('expected all departures', ra * N)
-    print('max:', max(s.P), 'min', min(s.P))
-    
+    WIPq = WIP - te
     TH = lib.countD(s) / (N)
     if TH == 0:
         CT = "No Value"
         TH = "No Value"
     else:
         CT = WIP / TH
-##    if te <= 0 or ra <= 0:
-##        ""
-##    else:
-##        print('Upper Limit WIP:', (WIP/ra+1)/te)
-    print('WIP:', WIP)
-##    if te <= 0 or ra <= 0:
-##        ""  
-##    else:
-##        print('Lower Limit WIP:', (WIP/ra)/te)
-##    print('Upper Limit TH:', THmax)
-    print('TH:', TH)
-##    print('Lower Limit TH:', 0)
-##    if ra <= 0:
-##        ""
-##    else:
-##        print('Upper Limit CTq:', WIP/ra+1)
-    print('CT:', CT)
-##    if ra <= 0:
-##        ""
-##    else:
-##        print('Lower Limit CTq:', WIP/ra)
     CTq = CT - te
+    if te <= 0 or ra <= 0:
+        ""
+    else:
+        print('Upper Limit WIP:', (WIP/ra)/te)
+    print('WIP', WIP)
+    if te <= 0 or ra <= 0:
+        ""  
+    else:
+        print('Lower Limit WIP:', (WIP/ra-1)/te)
+    print('WIPq', WIPq)
+    print('TH', TH)
+    print('CT', CT)
+    if ra <= 0:
+        ""
+    else:
+        print('Upper Limit CTq:', WIP/ra)
     print('CTq:', CTq)
-    print('Expected ratio CTq/te approx. 10:', CTq / te)
-    CTq = 0.5 * u/(1-u) * te
-    print('Expected CT:', CTq + te)
-    print('Expected CTq:', CTq)
-    print('Expected WIPq:', ra * CTq)
+    if ra <= 0:
+        ""
+    else:
+        print('Lower Limit CTq:', WIP/ra-1)  
     print('CT per queue:', lib.averageD(s))
     print('stdDev:', lib.stdDev(s))
     print('CV:', lib.CV(s))
+    print('') 
+    print('-Expected values-')
+    ETH = ra
+    ECTq = 0.5 * (u/(1-u)) * te + 1
+    ECT = ECTq + te
+    EWIP = (ECTq + te) * ETH
+    EWIPq = EWIP - te
+    print('Expected WIP:', EWIP)
+    print('Expected WIPq:', EWIPq)
+    print('Expected TH', ETH)
+    print('Expected CT:', ECT)
+    print('Expected CTq:', ECTq)
     print('')
 
 # > Totals FCFS
