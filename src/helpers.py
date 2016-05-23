@@ -69,10 +69,11 @@ def determineNumberOfJobsInQ (s):
 
 # Add arrivals
 def addArrivals (s, A):
+    s.A.append(sum(A))
     for i in range (s.I):
         s.Q[i] += [0] * int(A[i])
 
-# Average departures
+# Average CT of jobs
 def averageD (s):
     avg = [0] * s.I
 
@@ -112,13 +113,19 @@ def CV (s):
 
 # Print server info
 def printServer (label, n, s, A):
-    print('Period', n)
-    print('Server %s' % label)
-    print('A', A)
+    #print('Period', n)
+    #print('Server %s' % label)
+    #print('A', A)
+    if n == 5000:
+        #print('s.A', s.A)
+        #print('P', s.P)
+        #print('sum D', countD(s))
     #print('Sum Arrivals', sum(A))
-    print('new Q', lenQ(s.I, s.Q))
-    print('Q', s.Q)
-    #print('D', s.D)
-    print('P', s.P)
+    #print('new Q', lenQ(s.I, s.Q))
+    #print('sum new Q', sum(lenQ(s.I, s.Q)))
+    #print('Q', s.Q)
+    print('D', s.D)
+    #print('sum D', countD(s))
+    #print('P', s.P)
     #print('R', s.R)
-    print('')
+    #print('')
