@@ -13,7 +13,7 @@ configs = [
     [7]
 ]
 
-print('A[0];queue;CT_a;CT_b;CT_c;CV_a;CV_b;CB_c')
+print('A[0];queue;CT_a;CT_b;CT_c;CV_a;CV_b;CV_c')
 
 for config in configs:
     np.random.seed(3) # Random number generator
@@ -22,12 +22,10 @@ for config in configs:
     I = 3                   # Number of Queues
     AI = [config[0], 7, 16] # Average arrivals
     N = 5000                # Number of Periods
-    S = 1                   # Number of servers
-    plotServer = 1          # Which server plot
+    S = 3                   # Number of servers
 
     # Servers
     N = N + 1
-    plotServer = min(plotServer,S)
     ra = sum(AI)
     #print(ra)
 
@@ -99,3 +97,20 @@ for config in configs:
     for i in range(S):
         s = CGCS[i]
         printResults('CGC s%s' % (i + 1), s)
+
+"""Total queue length equal over all periods"""
+diff = False
+
+for n in range(N):
+    for i in range(S):
+        a = FFS[i].P[n]
+        b = RRS[i].P[n]
+        c = CGCS[i].P[n]
+        if a != b or a != c:
+            print('Difference in Total Queue Length', n, i, a, b, c)
+            diff = True
+
+if not diff:
+    print('No differences in Total Queue Length')
+    print('')
+
