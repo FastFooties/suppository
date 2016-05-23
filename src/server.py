@@ -8,6 +8,6 @@ class Server:
         self.D = [[] for q in range(I)]
         self.LR = None # Last R
         self.LD = None # Last departures
-        self.P = []
-        self.A = []
+        self.P = [] #Last queue length
+        self.A = [] #Last arrival
         self.rule = None
