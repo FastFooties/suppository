@@ -13,7 +13,7 @@ configs = [
     [7]
 ]
 
-print('fai;queue;CTq_a;CTq_b;CTq_c;CV_a;CV_b;CB_c')
+print('A[0];queue;CT_a;CT_b;CT_c;CV_a;CV_b;CB_c')
 
 for config in configs:
     np.random.seed(3) # Random number generator
@@ -34,7 +34,7 @@ for config in configs:
     FFS = []
     RRS = []
     CGCS = []
-    c = np.ceil(ra + 1)  # Determine capacity of servers
+    c = np.ceil(ra + 3)  # Determine capacity of servers
 
     #print('Capacity', c)
     #print('')
