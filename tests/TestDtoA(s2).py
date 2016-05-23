@@ -26,12 +26,12 @@ else:
     for i in range(I):
         A[i] = AI[i]
 
-FCFS = []
+FFS = []
 RRS = []
 CGCS = []
 
 for i in range(S):
-    FCFS.append(Server(C, i))
+    FFS .append(Server(C, i))
     RRS .append(Server(C, i))
     CGCS.append(Server(C, i))
 
@@ -43,7 +43,7 @@ for n in range(N):
     # Servers
     for s in range(S):
         FCFS(FFS[s], Af, n)
-        print('FCFS','Period:', n, 'Server %s' % (s + 1) , 'Last Departures:', FCFS[s].LD)
+        print('FCFS','Period:', n, 'Server %s' % (s + 1) , 'Last Departures:', FFS[s].LD)
         Af = FFS[s].LD
 
         RR(RRS[s], Ar, n)
