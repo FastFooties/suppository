@@ -52,10 +52,4 @@ for n in range(N):
 		print('FCFS','Period:', n, 'Server %s' % (s + 1), 'Last Departures:', FFS[s].LD, 'Arrivals:', Af)
 		Af = FFS[s].LD
 
-		RR(RRS[s], Ar, n)
-		print('RR', 'Period:', n, 'Server %s' % (s + 1), 'Last Departures:', RRS[s].LD, 'Arrivals:', Ar)
-		Ar = RRS[s].LD
-
-		CGC(CGCS[s], Ac, n)
-		print('CGC', 'Period:', n, 'Server %s' % (s + 1), 'Last Departures:', CGCS[s].LD, 'Arrivals:', Ac)
-		Ac = CGCS[s].LD
+		

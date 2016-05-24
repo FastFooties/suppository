@@ -9,7 +9,7 @@ from src.cgc import CGC
 
 """Emptying the system"""
 Distribution = 'p'
-Q = [[1] * 1, [1] * 3, [1] * 5]
+Q = [[0] * 1, [0] * 3, [0] * 5]
 Qo = [[1] * 8]
 N = 7
 A = [0, 0, 0]
@@ -48,15 +48,20 @@ def CTi (results):
 
     return CT
 
+print('Queue:', Q)
+print('')
+
+
 def runWithR (s, R):
     results = []
     for i in range(len(R)):
         s.R = R[i]
         results.append(run(s))
-    print(results)
+    print('Resulting queue:', results)
     CT = CTi(results)
-    print(CT)
-    print(sum(CT) / len(CT))
+    print('Average CT per queue', CT)
+    print('Average CT', sum(CT) / len(CT))
+    print('')
 
 runWithR(first, [
     [0, 0, 0],
@@ -77,3 +82,5 @@ runWithR(single, [
     [6],
     [3]
 ])
+
+
