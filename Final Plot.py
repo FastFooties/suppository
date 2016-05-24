@@ -10,11 +10,11 @@ np.random.seed(3)       # Random number generator
 
 # Configuration
 I = 3                   # Number of Queues
-AI = [1, 7, 16]         # Average arrivals
+AI = [5, 7, 16]         # Average arrivals
 Distribution = "p"      # Poisson Distributed arrivals
-c = np.ceil(sum(AI) + 1)# Determine capacity of servers
-N = 50                # Number of Periods
-S = 1                   # Number of servers
+c = np.ceil(sum(AI) + 3)# Determine capacity of servers
+N = 100000                # Number of Periods
+S = 3                   # Number of servers
 plotServer = 1          # Which server plot
 
 # Servers
@@ -84,7 +84,7 @@ for n in range(N):
         Ar = RRS[s].LD
 
         CGC(CGCS[s], Ac, n)
-        #lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
+        lib.printServer('CGCS %d' % (s + 1), n, CGCS[s], Ac)
         Ac = CGCS[s].LD
 
 # Totals
@@ -92,16 +92,11 @@ def printResults (label, s):
     print('Server %d' % (i + 1))
     WIP = float(sum(s.P)) / N
     TH = lib.countD(s) / N
-    if TH == 0:
-        CT = "No Value"
-        TH = "No Value"
-    else:
-        CT = WIP / TH
-    CTq = 0.5 * u/(1-u) * te
+    CT = lib.CTQD(s)
     print('WIP:', WIP)
     print('TH:', TH)
     print('CT:', CT)
-    print('CTq per queue:', lib.averageD(s))
+    print('CT per queue:', lib.averageD(s))
     print('stdDev:', lib.stdDev(s))
     print('CV:', lib.CV(s))
     print('')

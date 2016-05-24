@@ -94,11 +94,7 @@ def printResults (label, s):
     WIP = float(sum(s.P)) / (N)
     WIPq = WIP - te
     TH = lib.countD(s) / (N)
-    if TH == 0:
-        CT = "No Value"
-        TH = "No Value"
-    else:
-        CT = WIP / TH
+    CT = lib.CTQD(s)
     CTq = CT - te
     if te <= 0 or ra <= 0:
         ""
@@ -110,7 +106,6 @@ def printResults (label, s):
     else:
         print('Lower Limit WIP:', (WIP/ra-1)/te)
     print('WIPq', WIPq)
-    print('TH', TH)
     print('CT', CT)
     if ra <= 0:
         ""
@@ -120,7 +115,9 @@ def printResults (label, s):
     if ra <= 0:
         ""
     else:
-        print('Lower Limit CTq:', WIP/ra-1)  
+        print('Lower Limit CTq:', WIP/ra-1)
+    print('TH', TH)
+    print('Littles Law TH:', WIP / CT)
     print('CT per queue:', lib.averageD(s))
     print('stdDev:', lib.stdDev(s))
     print('CV:', lib.CV(s))
@@ -164,6 +161,7 @@ for i in range(S):
     printResults('CGC s%s' % (i + 1), s)
     if i + 1 == plotServer:
         plt.plot(s.P, label = 'length queue CGC S%d' % (i + 1))
+        
         
 """Total queue length equal over all periods"""
 diff = False
