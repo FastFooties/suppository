@@ -85,6 +85,17 @@ def averageD (s):
 
     return avg
 
+
+# Total CT per queueing discipline
+def CTQD (s):
+    total = 0
+    count = 0
+    for d in s.D:
+        total += sum(d)
+        count += len(d)
+    return total / count
+
+
 def stdDev (s):
     avg = averageD(s)
     V = []
@@ -111,20 +122,17 @@ def CV (s):
 
     return cv
 
+
 # Print server info
 def printServer (label, n, s, A):
     #print('Period', n)
     #print('Server %s' % label)
     #print('A', A)
-    #if n == 5000:
-        #print('s.A', s.A)
-        #print('P', s.P)
-        #print('sum D', countD(s))
     #print('Sum Arrivals', sum(A))
     #print('new Q', lenQ(s.I, s.Q))
     #print('sum new Q', sum(lenQ(s.I, s.Q)))
     #print('Q', s.Q)
-    print('D', s.D)
+    #print('D', s.D)
     #print('sum D', countD(s))
     #print('P', s.P)
     #print('R', s.R)
